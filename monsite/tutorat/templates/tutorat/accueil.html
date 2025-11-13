@@ -1,0 +1,96 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Accueil - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">
+            Bienvenue sur la plateforme de tutorat
+        </h1>
+        <p class="lead mb-4">
+            Gérez vos séances de tutorat en toute simplicité. 
+            Étudiants, tuteurs et administrateurs, connectez-vous pour accéder à vos services.
+        </p>
+        
+        {% if not user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-flex">
+                <a href="{% url 'inscription' %}" class="btn btn-primary btn-lg">
+                    📝 S'inscrire
+                </a>
+                <a href="{% url 'connexion' %}" class="btn btn-outline-primary btn-lg">
+                    🔐 Se connecter
+                </a>
+            </div>
+        {% else %}
+            <div class="d-grid gap-2 d-md-flex">
+                {% if user.role == 'ADMIN' %}
+                    <a href="{% url 'dashboard_admin' %}" class="btn btn-primary btn-lg">
+                        📊 Accéder au Dashboard
+                    </a>
+                {% elif user.role == 'TUTEUR' %}
+                    <a href="{% url 'dashboard_tuteur' %}" class="btn btn-primary btn-lg">
+                        📚 Accéder au Dashboard
+                    </a>
+                {% else %}
+                    <a href="{% url 'dashboard_etudiant' %}" class="btn btn-primary btn-lg">
+                        📖 Accéder au Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <h3 class="card-title mb-4">🎯 Fonctionnalités</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <strong>✅ Pour les étudiants :</strong><br>
+                        Inscrivez-vous aux séances de tutorat disponibles
+                    </li>
+                    <li class="mb-3">
+                        <strong>👨‍🏫 Pour les tuteurs :</strong><br>
+                        Créez et gérez vos séances de tutorat
+                    </li>
+                    <li class="mb-3">
+                        <strong>⚙️ Pour les administrateurs :</strong><br>
+                        Supervisez l'ensemble du système de tutorat
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-1 mb-3">📅</div>
+                <h5 class="card-title">Planification simplifiée</h5>
+                <p class="card-text">Consultez et gérez facilement vos séances de tutorat</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-1 mb-3">💬</div>
+                <h5 class="card-title">Communication facilitée</h5>
+                <p class="card-text">Échangez avec vos tuteurs via le forum intégré</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-1 mb-3">📊</div>
+                <h5 class="card-title">Suivi des performances</h5>
+                <p class="card-text">Consultez vos statistiques et votre progression</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Supprimer la séance - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirmer la suppression</h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    Êtes-vous sûr de vouloir supprimer la séance suivante ?
+                </p>
+                
+                <div class="alert alert-warning">
+                    <strong>{{ seance.titre }}</strong><br>
+                    📖 {{ seance.matiere.nom }}<br>
+                    📅 {{ seance.date|date:"d/m/Y" }} à {{ seance.heure_debut|time:"H:i" }}<br>
+                    📍 {{ seance.lieu }}
+                </div>
+                
+                {% if seance.inscriptions.count > 0 %}
+                <div class="alert alert-danger">
+                    <strong>Attention !</strong> Cette séance a <strong>{{ seance.inscriptions.count }}</strong> étudiant(s) inscrit(s). 
+                    Ils seront automatiquement désincrits.
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'seance_detail' seance.pk %}" class="btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            Oui, supprimer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

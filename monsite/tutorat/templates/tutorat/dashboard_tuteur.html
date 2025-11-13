@@ -1,0 +1,76 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Dashboard Tuteur - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5">👨‍🏫 Tableau de bord Tuteur</h1>
+        <p class="lead">Bienvenue {{ user.first_name|default:user.username }} !</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-success mb-3">➕</div>
+                <h5 class="card-title">Créer une séance</h5>
+                <p class="card-text text-muted">Planifiez une nouvelle séance de tutorat</p>
+                <a href="{% url 'seance_create' %}" class="btn btn-success">Créer</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-primary mb-3">📋</div>
+                <h5 class="card-title">Mes séances</h5>
+                <p class="card-text text-muted">Gérez vos séances de tutorat</p>
+                <a href="{% url 'seance_list' %}" class="btn btn-primary">Voir mes séances</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-info mb-3">📅</div>
+                <h5 class="card-title">Calendrier</h5>
+                <p class="card-text text-muted">Visualisez vos séances</p>
+                <a href="{% url 'calendrier' %}" class="btn btn-info">Voir le calendrier</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">📅 Séances à venir</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Vous n'avez pas encore créé de séances.</p>
+                <a href="#" class="btn btn-sm btn-outline-success">Créer ma première séance</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">📊 Mes statistiques</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><strong>Séances créées :</strong> 0</li>
+                    <li class="mb-2"><strong>Étudiants aidés :</strong> 0</li>
+                    <li class="mb-2"><strong>Heures dispensées :</strong> 0h</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

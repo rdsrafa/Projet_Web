@@ -1,0 +1,123 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}{{ action }} une séance - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">{{ action }} une séance de tutorat</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.titre.id_for_label }}" class="form-label">
+                            Titre de la séance *
+                        </label>
+                        {{ form.titre }}
+                        {% if form.titre.errors %}
+                            <div class="text-danger small">{{ form.titre.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.matiere.id_for_label }}" class="form-label">
+                                Matière *
+                            </label>
+                            {{ form.matiere }}
+                            {% if form.matiere.errors %}
+                                <div class="text-danger small">{{ form.matiere.errors }}</div>
+                            {% endif %}
+                            {% if form.matiere.help_text %}
+                                <small class="text-warning">{{ form.matiere.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.lieu.id_for_label }}" class="form-label">
+                                Lieu *
+                            </label>
+                            {{ form.lieu }}
+                            {% if form.lieu.errors %}
+                                <div class="text-danger small">{{ form.lieu.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">
+                                Date *
+                            </label>
+                            {{ form.date }}
+                            {% if form.date.errors %}
+                                <div class="text-danger small">{{ form.date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.heure_debut.id_for_label }}" class="form-label">
+                                Heure de début *
+                            </label>
+                            {{ form.heure_debut }}
+                            {% if form.heure_debut.errors %}
+                                <div class="text-danger small">{{ form.heure_debut.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="{{ form.heure_fin.id_for_label }}" class="form-label">
+                                Heure de fin *
+                            </label>
+                            {{ form.heure_fin }}
+                            {% if form.heure_fin.errors %}
+                                <div class="text-danger small">{{ form.heure_fin.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.places_max.id_for_label }}" class="form-label">
+                            Nombre de places maximum *
+                        </label>
+                        {{ form.places_max }}
+                        {% if form.places_max.errors %}
+                            <div class="text-danger small">{{ form.places_max.errors }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Par défaut : 10 places</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            Description
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> {{ action }}
+                        </button>
+                        <a href="{% url 'seance_list' %}" class="btn btn-secondary">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

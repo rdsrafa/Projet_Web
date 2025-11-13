@@ -1,0 +1,95 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Dashboard Étudiant - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5">📖 Tableau de bord Étudiant</h1>
+        <p class="lead">Bienvenue {{ user.first_name|default:user.username }} !</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-primary mb-3">📚</div>
+                <h5 class="card-title">Mes inscriptions</h5>
+                <p class="card-text text-muted">Consultez vos séances de tutorat</p>
+                <a href="#" class="btn btn-primary">Voir mes séances</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-success mb-3">🔍</div>
+                <h5 class="card-title">Séances disponibles</h5>
+                <p class="card-text text-muted">Trouvez un tutorat adapté à vos besoins</p>
+                <a href="#" class="btn btn-success">Explorer</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-1 text-info mb-3">💬</div>
+                <h5 class="card-title">Forum</h5>
+                <p class="card-text text-muted">Échangez avec vos tuteurs</p>
+                <a href="#" class="btn btn-info">Accéder au forum</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📅 Mes prochaines séances</h5>
+            </div>
+            <div class="card-body">
+                {% if mes_inscriptions %}
+                    <div class="list-group">
+                        {% for inscription in mes_inscriptions %}
+                        <a href="{% url 'seance_detail' inscription.seance.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ inscription.seance.titre }}</h6>
+                                <small>{{ inscription.seance.date|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1">
+                                <span class="badge bg-info">{{ inscription.seance.matiere.code }}</span>
+                                {{ inscription.seance.heure_debut|time:"H:i" }} - {{ inscription.seance.heure_fin|time:"H:i" }}
+                                | 📍 {{ inscription.seance.lieu }}
+                            </p>
+                            <small>Tuteur: {{ inscription.seance.tuteur.username }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Vous n'avez pas encore de séances programmées.</p>
+                    <a href="{% url 'seance_list' %}" class="btn btn-sm btn-outline-primary">S'inscrire à une séance</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">📊 Statistiques</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><strong>Séances suivies :</strong> {{ total_inscriptions }}</li>
+                    <li class="mb-2"><strong>Heures de tutorat :</strong> {{ total_inscriptions }}h</li>
+                    <li class="mb-2"><strong>Matières :</strong> {{ mes_inscriptions|length }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
