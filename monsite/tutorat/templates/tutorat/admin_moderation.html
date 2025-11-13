@@ -1,0 +1,206 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Modération - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="display-5">
+            <i class="bi bi-shield-check"></i> Modération de la plateforme
+        </h1>
+        <p class="text-muted">Gérez les utilisateurs, le forum et les séances</p>
+    </div>
+</div>
+
+<!-- Onglets -->
+<ul class="nav nav-tabs mb-4" id="moderationTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="utilisateurs-tab" data-bs-toggle="tab" data-bs-target="#utilisateurs" type="button" role="tab">
+            <i class="bi bi-people"></i> Utilisateurs
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="forum-tab" data-bs-toggle="tab" data-bs-target="#forum" type="button" role="tab">
+            <i class="bi bi-chat-dots"></i> Forum
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="seances-tab" data-bs-toggle="tab" data-bs-target="#seances" type="button" role="tab">
+            <i class="bi bi-calendar3"></i> Séances
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="moderationTabsContent">
+    <!-- Utilisateurs -->
+    <div class="tab-pane fade show active" id="utilisateurs" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">👥 Gestion des utilisateurs</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Inscription</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in utilisateurs %}
+                            <tr>
+                                <td>
+                                    <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
+                                    <small class="text-muted">@{{ user.username }}</small>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if user.role == 'ADMIN' %}bg-danger
+                                        {% elif user.role == 'TUTEUR' %}bg-warning
+                                        {% else %}bg-info{% endif %}">
+                                        {{ user.get_role_display }}
+                                    </span>
+                                </td>
+                                <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Actif</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin_utilisateur_toggle' user.pk %}" 
+                                       class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                                        {% if user.is_active %}
+                                            <i class="bi bi-ban"></i> Désactiver
+                                        {% else %}
+                                            <i class="bi bi-check-circle"></i> Activer
+                                        {% endif %}
+                                    </a>
+                                    <a href="/admin/tutorat/user/{{ user.pk }}/change/" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Éditer
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/admin/tutorat/user/" class="btn btn-primary mt-3">
+                    <i class="bi bi-gear"></i> Voir tous les utilisateurs dans l'admin
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forum -->
+    <div class="tab-pane fade" id="forum" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">💬 Modération du forum</h5>
+            </div>
+            <div class="card-body">
+                {% if sujets_forum %}
+                    <div class="list-group">
+                        {% for sujet in sujets_forum %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        {{ sujet.titre }}
+                                        {% if sujet.epingle %}
+                                            <span class="badge bg-warning">Épinglé</span>
+                                        {% endif %}
+                                        {% if sujet.resolu %}
+                                            <span class="badge bg-success">Résolu</span>
+                                        {% endif %}
+                                    </h6>
+                                    <p class="text-muted small mb-1">
+                                        Par {{ sujet.auteur.first_name }} {{ sujet.auteur.last_name }} 
+                                        | <span class="badge bg-info">{{ sujet.matiere.code }}</span>
+                                        | {{ sujet.created_at|date:"d/m/Y" }}
+                                    </p>
+                                    <p class="mb-0">{{ sujet.contenu|truncatewords:20 }}</p>
+                                </div>
+                                <div class="btn-group ms-3" role="group">
+                                    <a href="{% url 'forum_sujet_detail' sujet.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'admin_sujet_epingler' sujet.pk %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pin-angle"></i>
+                                    </a>
+                                    <a href="{% url 'admin_sujet_supprimer' sujet.pk %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucun sujet à modérer</p>
+                {% endif %}
+                <a href="{% url 'forum_accueil' %}" class="btn btn-success mt-3">
+                    <i class="bi bi-chat-dots"></i> Voir tout le forum
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Séances -->
+    <div class="tab-pane fade" id="seances" role="tabpanel">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">📚 Modération des séances</h5>
+            </div>
+            <div class="card-body">
+                {% if seances %}
+                    <div class="list-group">
+                        {% for seance in seances %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ seance.titre }}</h6>
+                                    <p class="text-muted small mb-1">
+                                        Par {{ seance.tuteur.first_name }} {{ seance.tuteur.last_name }}
+                                        | <span class="badge bg-info">{{ seance.matiere.code }}</span>
+                                        | {{ seance.date|date:"d/m/Y" }} à {{ seance.heure_debut|time:"H:i" }}
+                                    </p>
+                                    <p class="mb-0">
+                                        📍 {{ seance.lieu }} | 
+                                        👥 {{ seance.inscriptions.count }}/{{ seance.places_max }}
+                                    </p>
+                                </div>
+                                <div class="btn-group ms-3" role="group">
+                                    <a href="{% url 'seance_detail' seance.pk %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'seance_update' seance.pk %}" class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'seance_delete' seance.pk %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune séance à modérer</p>
+                {% endif %}
+                <a href="{% url 'seance_list' %}" class="btn btn-info mt-3">
+                    <i class="bi bi-calendar3"></i> Voir toutes les séances
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

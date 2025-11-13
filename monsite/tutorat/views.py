@@ -79,10 +79,12 @@ def dashboard_etudiant(request):
     """
     Tableau de bord pour les étudiants
     """
+    # Seulement les séances futures
     mes_inscriptions = Inscription.objects.filter(
         etudiant=request.user,
-        statut='CONFIRMEE'
-    ).select_related('seance', 'seance__matiere', 'seance__tuteur')
+        statut='CONFIRMEE',
+        seance__date__gte=datetime.now().date()  # Seulement les séances à venir
+    ).select_related('seance', 'seance__matiere', 'seance__tuteur').order_by('seance__date', 'seance__heure_debut')
     
     seances_disponibles = Seance.objects.filter(
         statut='PREVUE',
@@ -133,19 +135,38 @@ def dashboard_admin(request):
     """
     Tableau de bord pour les administrateurs
     """
+    from django.db.models import Count
+    
     total_users = User.objects.count()
+    total_tuteurs = User.objects.filter(role='TUTEUR').count()
+    total_etudiants = User.objects.filter(role='ETUDIANT').count()
     total_seances = Seance.objects.count()
     total_inscriptions = Inscription.objects.filter(statut='CONFIRMEE').count()
     total_matieres = Matiere.objects.count()
+    total_sujets_forum = SujetForum.objects.count()
+    total_messages = MessageModel.objects.count()
     
     seances_recentes = Seance.objects.select_related('tuteur', 'matiere').order_by('-created_at')[:5]
+    sujets_recents = SujetForum.objects.select_related('auteur', 'matiere').order_by('-created_at')[:5]
+    
+    # Statistiques par matière
+    stats_matieres = Matiere.objects.annotate(
+        nb_seances=Count('seances'),
+        nb_sujets=Count('sujets_forum')
+    ).order_by('-nb_seances')
     
     context = {
         'total_users': total_users,
+        'total_tuteurs': total_tuteurs,
+        'total_etudiants': total_etudiants,
         'total_seances': total_seances,
         'total_inscriptions': total_inscriptions,
         'total_matieres': total_matieres,
+        'total_sujets_forum': total_sujets_forum,
+        'total_messages': total_messages,
         'seances_recentes': seances_recentes,
+        'sujets_recents': sujets_recents,
+        'stats_matieres': stats_matieres,
     }
     return render(request, 'tutorat/dashboard_admin.html', context)
 
@@ -182,12 +203,40 @@ def seance_list(request):
     """
     Liste des séances disponibles
     """
+    from datetime import datetime
+    
+    # Mettre à jour automatiquement les statuts
+    now = datetime.now()
+    today = now.date()
+    current_time = now.time()
+    
+    # Marquer les séances passées comme TERMINEE
+    Seance.objects.filter(
+        date__lt=today,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances d'aujourd'hui terminées comme TERMINEE
+    Seance.objects.filter(
+        date=today,
+        heure_fin__lt=current_time,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances en cours comme EN_COURS
+    Seance.objects.filter(
+        date=today,
+        heure_debut__lte=current_time,
+        heure_fin__gte=current_time,
+        statut='PREVUE'
+    ).update(statut='EN_COURS')
+    
     if request.user.role == 'TUTEUR':
         seances = Seance.objects.filter(tuteur=request.user).select_related('matiere')
     else:
         seances = Seance.objects.filter(
-            statut='PREVUE',
-            date__gte=datetime.now().date()
+            statut__in=['PREVUE', 'EN_COURS'],
+            date__gte=today
         ).select_related('matiere', 'tuteur')
     
     return render(request, 'tutorat/seance_list.html', {'seances': seances})
@@ -306,22 +355,62 @@ def seances_json(request):
     """
     Retourne les séances au format JSON pour le calendrier
     """
+    from datetime import datetime
+    
+    # Mettre à jour automatiquement les statuts
+    now = datetime.now()
+    today = now.date()
+    current_time = now.time()
+    
+    # Marquer les séances passées comme TERMINEE
+    Seance.objects.filter(
+        date__lt=today,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances d'aujourd'hui terminées comme TERMINEE
+    Seance.objects.filter(
+        date=today,
+        heure_fin__lt=current_time,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances en cours comme EN_COURS
+    Seance.objects.filter(
+        date=today,
+        heure_debut__lte=current_time,
+        heure_fin__gte=current_time,
+        statut='PREVUE'
+    ).update(statut='EN_COURS')
+    
     if request.user.role == 'TUTEUR':
         seances = Seance.objects.filter(tuteur=request.user)
     elif request.user.role == 'ETUDIANT':
-        seances = Seance.objects.filter(statut='PREVUE')
+        seances = Seance.objects.filter(statut__in=['PREVUE', 'EN_COURS'])
     else:
         seances = Seance.objects.all()
     
     events = []
+    
     for seance in seances.select_related('matiere'):
+        # Déterminer la couleur selon le statut
+        if seance.statut == 'ANNULEE':
+            color = '#dc3545'  # Rouge
+        elif seance.statut == 'TERMINEE':
+            color = '#6c757d'  # Gris
+        elif seance.statut == 'EN_COURS':
+            color = '#28a745'  # Vert
+        else:  # PREVUE
+            color = '#0d6efd'  # Bleu
+        
         events.append({
             'id': seance.id,
             'title': f"{seance.titre} ({seance.matiere.code})",
             'start': f"{seance.date}T{seance.heure_debut}",
             'end': f"{seance.date}T{seance.heure_fin}",
             'url': f"/seance/{seance.id}/",
-            'backgroundColor': '#0d6efd' if seance.statut == 'PREVUE' else '#6c757d',
+            'backgroundColor': color,
+            'borderColor': color,
         })
     
     return JsonResponse(events, safe=False)
@@ -332,6 +421,33 @@ def calendrier(request):
     """
     Page du calendrier interactif
     """
+    # Mettre à jour automatiquement les statuts des séances
+    from datetime import datetime
+    now = datetime.now()
+    today = now.date()
+    current_time = now.time()
+    
+    # Marquer les séances passées comme TERMINEE
+    Seance.objects.filter(
+        date__lt=today,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances d'aujourd'hui terminées comme TERMINEE
+    Seance.objects.filter(
+        date=today,
+        heure_fin__lt=current_time,
+        statut='PREVUE'
+    ).update(statut='TERMINEE')
+    
+    # Marquer les séances en cours comme EN_COURS
+    Seance.objects.filter(
+        date=today,
+        heure_debut__lte=current_time,
+        heure_fin__gte=current_time,
+        statut='PREVUE'
+    ).update(statut='EN_COURS')
+    
     return render(request, 'tutorat/calendrier.html')
 
 
@@ -498,6 +614,30 @@ def messagerie_liste(request):
 
 
 @login_required
+def messagerie_utilisateurs(request):
+    """
+    Liste des utilisateurs disponibles pour démarrer une conversation
+    """
+    if request.user.role == 'ETUDIANT':
+        # Les étudiants peuvent écrire aux tuteurs
+        utilisateurs = User.objects.filter(role='TUTEUR').exclude(id=request.user.id)
+    elif request.user.role == 'TUTEUR':
+        # Les tuteurs peuvent écrire à leurs étudiants (inscrits à leurs séances)
+        utilisateurs = User.objects.filter(
+            role='ETUDIANT',
+            inscriptions__seance__tuteur=request.user
+        ).distinct().exclude(id=request.user.id)
+    else:
+        # Admin peut écrire à tout le monde
+        utilisateurs = User.objects.exclude(id=request.user.id)
+    
+    context = {
+        'utilisateurs': utilisateurs,
+    }
+    return render(request, 'tutorat/messagerie_utilisateurs.html', context)
+
+
+@login_required
 def messagerie_conversation(request, pk):
     """
     Afficher une conversation
@@ -594,3 +734,115 @@ def notifications_count(request):
     """
     count = request.user.notifications.filter(lue=False).count()
     return JsonResponse({'count': count})
+
+
+# ========== MODÉRATION (ADMIN) ==========
+
+@login_required
+def admin_moderation(request):
+    """
+    Page de modération pour les admins
+    """
+    if request.user.role != 'ADMIN':
+        messages.error(request, "Accès refusé. Seuls les administrateurs peuvent accéder à cette page.")
+        return redirect('accueil')
+    
+    # Tous les utilisateurs
+    utilisateurs = User.objects.all().order_by('-date_joined')[:20]
+    
+    # Sujets du forum récents
+    sujets_forum = SujetForum.objects.select_related('auteur', 'matiere').order_by('-created_at')[:10]
+    
+    # Séances récentes
+    seances = Seance.objects.select_related('tuteur', 'matiere').order_by('-created_at')[:10]
+    
+    context = {
+        'utilisateurs': utilisateurs,
+        'sujets_forum': sujets_forum,
+        'seances': seances,
+    }
+    return render(request, 'tutorat/admin_moderation.html', context)
+
+
+@login_required
+def admin_sujet_epingler(request, pk):
+    """
+    Épingler/Désépingler un sujet du forum
+    """
+    if request.user.role != 'ADMIN':
+        messages.error(request, "Accès refusé.")
+        return redirect('accueil')
+    
+    sujet = get_object_or_404(SujetForum, pk=pk)
+    sujet.epingle = not sujet.epingle
+    sujet.save()
+    
+    if sujet.epingle:
+        messages.success(request, f'Le sujet "{sujet.titre}" a été épinglé.')
+    else:
+        messages.success(request, f'Le sujet "{sujet.titre}" a été désépinglé.')
+    
+    return redirect('forum_sujet_detail', pk=pk)
+
+
+@login_required
+def admin_sujet_supprimer(request, pk):
+    """
+    Supprimer un sujet du forum
+    """
+    if request.user.role != 'ADMIN':
+        messages.error(request, "Accès refusé.")
+        return redirect('accueil')
+    
+    sujet = get_object_or_404(SujetForum, pk=pk)
+    
+    if request.method == 'POST':
+        titre = sujet.titre
+        sujet.delete()
+        messages.success(request, f'Le sujet "{titre}" a été supprimé.')
+        return redirect('forum_accueil')
+    
+    return render(request, 'tutorat/admin_sujet_confirm_delete.html', {'sujet': sujet})
+
+
+@login_required
+def admin_reponse_supprimer(request, pk):
+    """
+    Supprimer une réponse du forum
+    """
+    if request.user.role != 'ADMIN':
+        messages.error(request, "Accès refusé.")
+        return redirect('accueil')
+    
+    reponse = get_object_or_404(ReponseForum, pk=pk)
+    sujet_pk = reponse.sujet.pk
+    
+    reponse.delete()
+    messages.success(request, 'La réponse a été supprimée.')
+    return redirect('forum_sujet_detail', pk=sujet_pk)
+
+
+@login_required
+def admin_utilisateur_toggle(request, pk):
+    """
+    Activer/Désactiver un utilisateur
+    """
+    if request.user.role != 'ADMIN':
+        messages.error(request, "Accès refusé.")
+        return redirect('accueil')
+    
+    utilisateur = get_object_or_404(User, pk=pk)
+    
+    if utilisateur.id == request.user.id:
+        messages.error(request, "Vous ne pouvez pas désactiver votre propre compte.")
+        return redirect('admin_moderation')
+    
+    utilisateur.is_active = not utilisateur.is_active
+    utilisateur.save()
+    
+    if utilisateur.is_active:
+        messages.success(request, f'Le compte de {utilisateur.username} a été activé.')
+    else:
+        messages.warning(request, f'Le compte de {utilisateur.username} a été désactivé.')
+    
+    return redirect('admin_moderation')

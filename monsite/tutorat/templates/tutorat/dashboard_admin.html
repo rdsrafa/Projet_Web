@@ -17,7 +17,12 @@
                 <div class="display-1 text-primary mb-3">👥</div>
                 <h5 class="card-title">Utilisateurs</h5>
                 <p class="display-6 fw-bold">{{ total_users }}</p>
-                <a href="/admin/tutorat/user/" class="btn btn-sm btn-outline-primary">Gérer</a>
+                <small class="text-muted">
+                    {{ total_tuteurs }} tuteurs | {{ total_etudiants }} étudiants
+                </small>
+                <div class="mt-3">
+                    <a href="/admin/tutorat/user/" class="btn btn-sm btn-outline-primary">Gérer</a>
+                </div>
             </div>
         </div>
     </div>
@@ -28,7 +33,10 @@
                 <div class="display-1 text-success mb-3">📚</div>
                 <h5 class="card-title">Séances</h5>
                 <p class="display-6 fw-bold">{{ total_seances }}</p>
-                <a href="{% url 'seance_list' %}" class="btn btn-sm btn-outline-success">Voir toutes</a>
+                <small class="text-muted">{{ total_inscriptions }} inscriptions</small>
+                <div class="mt-3">
+                    <a href="{% url 'seance_list' %}" class="btn btn-sm btn-outline-success">Voir toutes</a>
+                </div>
             </div>
         </div>
     </div>
@@ -36,10 +44,13 @@
     <div class="col-md-3">
         <div class="card shadow-sm h-100 border-info">
             <div class="card-body text-center">
-                <div class="display-1 text-info mb-3">✏️</div>
-                <h5 class="card-title">Inscriptions</h5>
-                <p class="display-6 fw-bold">{{ total_inscriptions }}</p>
-                <a href="/admin/tutorat/inscription/" class="btn btn-sm btn-outline-info">Détails</a>
+                <div class="display-1 text-info mb-3">💬</div>
+                <h5 class="card-title">Forum</h5>
+                <p class="display-6 fw-bold">{{ total_sujets_forum }}</p>
+                <small class="text-muted">sujets de discussion</small>
+                <div class="mt-3">
+                    <a href="{% url 'forum_accueil' %}" class="btn btn-sm btn-outline-info">Voir le forum</a>
+                </div>
             </div>
         </div>
     </div>
@@ -50,7 +61,10 @@
                 <div class="display-1 text-warning mb-3">📖</div>
                 <h5 class="card-title">Matières</h5>
                 <p class="display-6 fw-bold">{{ total_matieres }}</p>
-                <a href="/admin/tutorat/matiere/" class="btn btn-sm btn-outline-warning">Gérer</a>
+                <small class="text-muted">matières enseignées</small>
+                <div class="mt-3">
+                    <a href="/admin/tutorat/matiere/" class="btn btn-sm btn-outline-warning">Gérer</a>
+                </div>
             </div>
         </div>
     </div>
@@ -101,10 +115,41 @@
     <div class="col-12">
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">📋 Activité récente</h5>
+                <h5 class="mb-0">📋 Séances récentes</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">Aucune activité récente à afficher.</p>
+                {% if seances_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Tuteur</th>
+                                    <th>Matière</th>
+                                    <th>Date</th>
+                                    <th>Inscriptions</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seance in seances_recentes %}
+                                <tr>
+                                    <td>{{ seance.titre }}</td>
+                                    <td>{{ seance.tuteur.username }}</td>
+                                    <td><span class="badge bg-info">{{ seance.matiere.code }}</span></td>
+                                    <td>{{ seance.date|date:"d/m/Y" }}</td>
+                                    <td>{{ seance.inscriptions.count }}/{{ seance.places_max }}</td>
+                                    <td>
+                                        <a href="{% url 'seance_detail' seance.pk %}" class="btn btn-sm btn-outline-primary">Voir</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune séance créée pour le moment.</p>
+                {% endif %}
             </div>
         </div>
     </div>

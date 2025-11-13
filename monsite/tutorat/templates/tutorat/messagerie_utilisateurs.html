@@ -1,0 +1,70 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Nouvelle conversation - Messagerie{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5">
+                <i class="bi bi-person-plus"></i> Démarrer une conversation
+            </h1>
+            <a href="{% url 'messagerie_liste' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if utilisateurs %}
+    <div class="row">
+        {% for utilisateur in utilisateurs %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-person-fill fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="card-title mb-1">
+                                {{ utilisateur.first_name }} {{ utilisateur.last_name }}
+                            </h5>
+                            <p class="text-muted small mb-0">
+                                <span class="badge 
+                                    {% if utilisateur.role == 'TUTEUR' %}bg-warning
+                                    {% elif utilisateur.role == 'ETUDIANT' %}bg-info
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ utilisateur.get_role_display }}
+                                </span>
+                            </p>
+                            {% if utilisateur.email %}
+                                <p class="text-muted small mb-0">
+                                    <i class="bi bi-envelope"></i> {{ utilisateur.email }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'messagerie_nouvelle' utilisateur.id %}" class="btn btn-primary w-100">
+                            <i class="bi bi-chat-dots"></i> Envoyer un message
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4><i class="bi bi-info-circle"></i> Aucun utilisateur disponible</h4>
+        {% if user.role == 'ETUDIANT' %}
+            <p>Aucun tuteur n'est encore disponible sur la plateforme.</p>
+        {% elif user.role == 'TUTEUR' %}
+            <p>Vous n'avez pas encore d'étudiants inscrits à vos séances.</p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

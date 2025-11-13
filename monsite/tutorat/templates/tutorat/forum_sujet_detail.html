@@ -16,6 +16,14 @@
                                 <i class="bi bi-check-circle"></i> Résolu
                             </span>
                         {% endif %}
+                        {% if user.role == 'ADMIN' %}
+                            <a href="{% url 'admin_sujet_epingler' sujet.pk %}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pin-angle"></i> {% if sujet.epingle %}Désépingler{% else %}Épingler{% endif %}
+                            </a>
+                            <a href="{% url 'admin_sujet_supprimer' sujet.pk %}" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

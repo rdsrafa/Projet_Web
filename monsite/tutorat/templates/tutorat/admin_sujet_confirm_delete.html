@@ -1,0 +1,44 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Supprimer le sujet - Modération{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Confirmer la suppression</h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    Êtes-vous sûr de vouloir supprimer ce sujet du forum ?
+                </p>
+                
+                <div class="alert alert-warning">
+                    <strong>{{ sujet.titre }}</strong><br>
+                    📖 {{ sujet.matiere.nom }}<br>
+                    👤 Par {{ sujet.auteur.first_name }} {{ sujet.auteur.last_name }}<br>
+                    📅 {{ sujet.created_at|date:"d/m/Y" }}<br>
+                    💬 {{ sujet.reponses.count }} réponse(s)
+                </div>
+                
+                <div class="alert alert-danger">
+                    <strong>Attention !</strong> Cette action est irréversible. Toutes les réponses associées seront également supprimées.
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'admin_moderation' %}" class="btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            Oui, supprimer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

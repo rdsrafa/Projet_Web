@@ -34,10 +34,18 @@ urlpatterns = [
     
     # Messagerie
     path('messagerie/', views.messagerie_liste, name='messagerie_liste'),
+    path('messagerie/utilisateurs/', views.messagerie_utilisateurs, name='messagerie_utilisateurs'),
     path('messagerie/conversation/<int:pk>/', views.messagerie_conversation, name='messagerie_conversation'),
     path('messagerie/nouveau/<int:user_id>/', views.messagerie_nouvelle, name='messagerie_nouvelle'),
     
     # Notifications
     path('notifications/', views.notifications_liste, name='notifications_liste'),
     path('api/notifications/count/', views.notifications_count, name='notifications_count'),
+    
+    # Modération (Admin)
+    path('admin/moderation/', views.admin_moderation, name='admin_moderation'),
+    path('admin/sujet/<int:pk>/epingler/', views.admin_sujet_epingler, name='admin_sujet_epingler'),
+    path('admin/sujet/<int:pk>/supprimer/', views.admin_sujet_supprimer, name='admin_sujet_supprimer'),
+    path('admin/reponse/<int:pk>/supprimer/', views.admin_reponse_supprimer, name='admin_reponse_supprimer'),
+    path('admin/utilisateur/<int:pk>/toggle/', views.admin_utilisateur_toggle, name='admin_utilisateur_toggle'),
 ]
