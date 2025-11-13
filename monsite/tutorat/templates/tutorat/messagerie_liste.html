@@ -1,0 +1,63 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Messagerie - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="display-5 mb-4">
+            <i class="bi bi-envelope"></i> Messagerie
+        </h1>
+    </div>
+</div>
+
+{% if conversations %}
+    <div class="row">
+        {% for conversation in conversations %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <a href="{% url 'messagerie_conversation' conversation.pk %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100 {% if conversation.non_lus > 0 %}border-primary{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-person-fill fs-4"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title mb-1">
+                                    {{ conversation.autre_participant.first_name }} {{ conversation.autre_participant.last_name }}
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    <span class="badge bg-secondary">{{ conversation.autre_participant.get_role_display }}</span>
+                                </p>
+                                
+                                {% if conversation.dernier_message %}
+                                    <p class="card-text text-muted small mb-2">
+                                        {{ conversation.dernier_message.contenu|truncatewords:10 }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> {{ conversation.dernier_message.created_at|timesince }}
+                                    </small>
+                                {% endif %}
+                                
+                                {% if conversation.non_lus > 0 %}
+                                    <span class="badge bg-danger rounded-pill mt-2">
+                                        {{ conversation.non_lus }} nouveau{{ conversation.non_lus|pluralize:"x" }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4><i class="bi bi-info-circle"></i> Aucune conversation</h4>
+        <p>Vous n'avez pas encore de conversations. Commencez à échanger avec vos tuteurs ou étudiants !</p>
+    </div>
+{% endif %}
+{% endblock %}

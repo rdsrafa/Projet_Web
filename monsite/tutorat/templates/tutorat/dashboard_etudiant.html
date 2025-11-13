@@ -17,7 +17,7 @@
                 <div class="display-1 text-primary mb-3">📚</div>
                 <h5 class="card-title">Mes inscriptions</h5>
                 <p class="card-text text-muted">Consultez vos séances de tutorat</p>
-                <a href="#" class="btn btn-primary">Voir mes séances</a>
+                <a href="{% url 'seance_list' %}" class="btn btn-primary">Voir mes séances</a>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                 <div class="display-1 text-success mb-3">🔍</div>
                 <h5 class="card-title">Séances disponibles</h5>
                 <p class="card-text text-muted">Trouvez un tutorat adapté à vos besoins</p>
-                <a href="#" class="btn btn-success">Explorer</a>
+                <a href="{% url 'seance_list' %}" class="btn btn-success">Explorer</a>
             </div>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 <div class="display-1 text-info mb-3">💬</div>
                 <h5 class="card-title">Forum</h5>
                 <p class="card-text text-muted">Échangez avec vos tuteurs</p>
-                <a href="#" class="btn btn-info">Accéder au forum</a>
+                <a href="{% url 'forum_accueil' %}" class="btn btn-info">Accéder au forum</a>
             </div>
         </div>
     </div>

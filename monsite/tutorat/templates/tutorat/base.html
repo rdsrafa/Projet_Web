@@ -274,6 +274,16 @@
                                 <i class="bi bi-calendar3"></i> Calendrier
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'forum_accueil' %}">
+                                <i class="bi bi-chat-dots"></i> Forum
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'messagerie_liste' %}">
+                                <i class="bi bi-envelope"></i> Messages
+                            </a>
+                        </li>
                     {% elif user.role == 'ETUDIANT' %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard_etudiant' %}">
@@ -288,6 +298,16 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'calendrier' %}">
                                 <i class="bi bi-calendar3"></i> Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'forum_accueil' %}">
+                                <i class="bi bi-chat-dots"></i> Forum
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'messagerie_liste' %}">
+                                <i class="bi bi-envelope"></i> Messages
                             </a>
                         </li>
                     {% elif user.role == 'ADMIN' %}
@@ -309,6 +329,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'calendrier' %}">
                                 <i class="bi bi-calendar3"></i> Calendrier
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'forum_accueil' %}">
+                                <i class="bi bi-chat-dots"></i> Forum
                             </a>
                         </li>
                     {% endif %}

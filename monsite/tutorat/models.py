@@ -129,6 +129,7 @@ class Seance(models.Model):
         if self.inscriptions.filter(etudiant=etudiant, statut='CONFIRMEE').exists():
             return False
         return True
+    
 
 
 class Inscription(models.Model):

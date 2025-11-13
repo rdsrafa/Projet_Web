@@ -1,0 +1,103 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Forum - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5"><i class="bi bi-chat-dots"></i> Forum d'entraide</h1>
+        <p class="text-muted">Posez vos questions, partagez vos connaissances</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'forum_sujet_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Poser une question
+        </a>
+    </div>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <select name="matiere" class="form-select" onchange="this.form.submit()">
+                    <option value="">Toutes les matières</option>
+                    {% for matiere in matieres %}
+                        <option value="{{ matiere.id }}" {% if matiere.id|stringformat:"s" == matiere_selectionnee %}selected{% endif %}>
+                            {{ matiere.nom }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="q" class="form-control" placeholder="Rechercher un sujet..." value="{{ recherche }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des sujets -->
+{% if sujets %}
+    <div class="row">
+        {% for sujet in sujets %}
+        <div class="col-12 mb-3">
+            <div class="card shadow-sm h-100 {% if sujet.epingle %}border-warning{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                {% if sujet.epingle %}
+                                    <span class="badge bg-warning"><i class="bi bi-pin-angle-fill"></i> Épinglé</span>
+                                {% endif %}
+                                {% if sujet.resolu %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Résolu</span>
+                                {% endif %}
+                                <span class="badge bg-info">{{ sujet.matiere.code }}</span>
+                            </div>
+                            
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'forum_sujet_detail' sujet.pk %}" class="text-decoration-none">
+                                    {{ sujet.titre }}
+                                </a>
+                            </h5>
+                            
+                            <p class="card-text text-muted small mb-2">
+                                {{ sujet.contenu|truncatewords:30 }}
+                            </p>
+                            
+                            <div class="d-flex align-items-center gap-3 text-muted small">
+                                <span>
+                                    <i class="bi bi-person-circle"></i> {{ sujet.auteur.first_name|default:sujet.auteur.username }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-clock"></i> {{ sujet.created_at|timesince }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-chat-left-text"></i> {{ sujet.nb_reponses }} réponse{{ sujet.nb_reponses|pluralize }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-eye"></i> {{ sujet.vues }} vue{{ sujet.vues|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4><i class="bi bi-info-circle"></i> Aucun sujet trouvé</h4>
+        <p>Soyez le premier à poser une question !</p>
+        <a href="{% url 'forum_sujet_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Poser une question
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
