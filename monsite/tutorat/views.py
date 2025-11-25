@@ -8,7 +8,6 @@ from .forms import InscriptionForm, ConnexionForm, SeanceForm, SujetForumForm, R
 from .models import Seance, Inscription, Matiere, User, SujetForum, ReponseForum, Conversation, Message as MessageModel, Notification
 from datetime import datetime
 
-
 def accueil(request):
     """
     Page d'accueil
