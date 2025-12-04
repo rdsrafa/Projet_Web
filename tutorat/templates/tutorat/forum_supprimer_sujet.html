@@ -1,0 +1,45 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Supprimer le Sujet{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0">🗑️ Confirmer la Suppression</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Attention !</strong> Cette action supprimera le sujet et toutes ses réponses.
+                </div>
+                
+                <p>Êtes-vous sûr de vouloir supprimer ce sujet ?</p>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ sujet.titre }}</h5>
+                        <p class="card-text">
+                            <strong>Matière :</strong> {{ sujet.matiere }}<br>
+                            <strong>Auteur :</strong> {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}<br>
+                            <strong>Réponses :</strong> {{ sujet.nombre_reponses }}
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum_sujet' sujet.pk %}" class="btn btn-secondary">
+                            ← Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Confirmer la suppression
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

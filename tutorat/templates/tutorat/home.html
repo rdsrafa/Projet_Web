@@ -1,0 +1,78 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Accueil - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row align-items-center" style="min-height: 60vh;">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">
+            Bienvenue sur la plateforme de tutorat
+        </h1>
+        <p class="lead mb-4">
+            Gérez vos séances de tutorat en toute simplicité. 
+            Étudiants, tuteurs et administrateurs, connectez-vous pour accéder à vos services.
+        </p>
+        
+        <div class="d-grid gap-2 d-md-flex">
+            <a href="{% url 'inscription_etudiant' %}" class="btn btn-primary btn-lg px-4">
+                📝 S'inscrire en tant qu'étudiant
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4">
+                🔐 Se connecter
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <h3 class="card-title mb-4">🎯 Fonctionnalités</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <strong>✅ Pour les étudiants :</strong><br>
+                        <span class="text-muted">Inscrivez-vous aux séances de tutorat disponibles</span>
+                    </li>
+                    <li class="mb-3">
+                        <strong>👨‍🏫 Pour les tuteurs :</strong><br>
+                        <span class="text-muted">Créez et gérez vos séances de tutorat</span>
+                    </li>
+                    <li class="mb-3">
+                        <strong>⚙️ Pour les administrateurs :</strong><br>
+                        <span class="text-muted">Supervisez l'ensemble du système de tutorat</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 text-center p-4 hover-lift">
+            <div class="card-body">
+                <div class="display-1 mb-3">📅</div>
+                <h5 class="card-title fw-bold">Planification simplifiée</h5>
+                <p class="card-text text-muted">Consultez et gérez facilement vos séances de tutorat</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 text-center p-4 hover-lift">
+            <div class="card-body">
+                <div class="display-1 mb-3">💬</div>
+                <h5 class="card-title fw-bold">Communication facilitée</h5>
+                <p class="card-text text-muted">Échangez avec vos tuteurs via le forum intégré</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0 text-center p-4 hover-lift">
+            <div class="card-body">
+                <div class="display-1 mb-3">📊</div>
+                <h5 class="card-title fw-bold">Suivi des performances</h5>
+                <p class="card-text text-muted">Accédez à votre historique et vos inscriptions</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

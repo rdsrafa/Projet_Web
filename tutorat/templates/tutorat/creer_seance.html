@@ -1,0 +1,65 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Créer une Séance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">➕ Créer une Nouvelle Séance</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.matiere|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.statut|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    {{ form.titre|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.date|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.heure_debut|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.heure_fin|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.lieu|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.places_max|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-secondary">
+                            ← Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            ✅ Créer la séance
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

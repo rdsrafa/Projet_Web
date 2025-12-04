@@ -1,0 +1,68 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1>👤 Mon Profil</h1>
+        <hr>
+
+        <!-- Informations personnelles -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">📋 Informations personnelles</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Nom d'utilisateur :</strong></div>
+                    <div class="col-md-8">{{ user.username }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Email :</strong></div>
+                    <div class="col-md-8">{{ user.email|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Prénom :</strong></div>
+                    <div class="col-md-8">{{ user.first_name|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Nom :</strong></div>
+                    <div class="col-md-8">{{ user.last_name|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Téléphone :</strong></div>
+                    <div class="col-md-8">{{ user.telephone|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Rôle :</strong></div>
+                    <div class="col-md-8"><span class="badge bg-info">{{ user.get_role_display }}</span></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Membre depuis :</strong></div>
+                    <div class="col-md-8">{{ user.date_inscription|date:"d/m/Y" }}</div>
+                </div>
+                
+                <hr>
+                
+                <a href="{% url 'modifier_profil' %}" class="btn btn-primary">
+                    ✏️ Modifier mes informations
+                </a>
+            </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">🔒 Sécurité</h4>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Changez votre mot de passe régulièrement pour garantir la sécurité de votre compte.</p>
+                <a href="{% url 'changer_mot_de_passe_profil' %}" class="btn btn-warning">
+                    🔑 Changer mon mot de passe
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

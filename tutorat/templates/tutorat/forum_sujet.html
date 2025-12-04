@@ -1,0 +1,84 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ sujet.titre }} - Forum{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <a href="{% url 'forum_liste' %}" class="btn btn-secondary mb-3">← Retour au forum</a>
+
+        <!-- Sujet principal -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">💬 {{ sujet.titre }}</h3>
+                {% if user == sujet.auteur or user.is_admin %}
+                    <a href="{% url 'forum_supprimer_sujet' sujet.pk %}" class="btn btn-sm btn-danger">
+                        🗑️ Supprimer
+                    </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-info">📖 {{ sujet.matiere }}</span>
+                    {% if sujet.est_resolu %}
+                        <span class="badge bg-success">✓ Résolu</span>
+                    {% endif %}
+                </div>
+                <p class="card-text">{{ sujet.contenu|linebreaks }}</p>
+                <hr>
+                <div class="text-muted small">
+                    <strong>Posté par :</strong> {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}
+                    ({{ sujet.auteur.get_role_display }}) 
+                    <strong>le</strong> {{ sujet.date_creation|date:"d/m/Y à H:i" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Réponses -->
+        <h4 class="mb-3">💬 Réponses ({{ reponses.count }})</h4>
+
+        {% for reponse in reponses %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <p class="card-text">{{ reponse.contenu|linebreaks }}</p>
+                        <div class="text-muted small">
+                            <strong>{{ reponse.auteur.get_full_name|default:reponse.auteur.username }}</strong>
+                            ({{ reponse.auteur.get_role_display }}) 
+                            - {{ reponse.date_creation|date:"d/m/Y à H:i" }}
+                        </div>
+                    </div>
+                    {% if user == reponse.auteur or user.is_admin %}
+                        <a href="{% url 'forum_supprimer_reponse' reponse.pk %}" class="btn btn-sm btn-outline-danger ms-3">
+                            🗑️
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-secondary">
+            Aucune réponse pour le moment. Soyez le premier à répondre !
+        </div>
+        {% endfor %}
+
+        <!-- Formulaire de réponse -->
+        <div class="card shadow mt-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">✍️ Ajouter une réponse</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success">
+                        💬 Publier la réponse
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

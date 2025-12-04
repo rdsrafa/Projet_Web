@@ -1,0 +1,56 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Séances Disponibles{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>📚 Séances de Tutorat Disponibles</h1>
+        <hr>
+        
+        {% if seances %}
+            <div class="row">
+                {% for seance in seances %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">{{ seance.titre }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>📖 Matière :</strong> {{ seance.matiere }}</p>
+                            <p><strong>👨‍🏫 Tuteur :</strong> {{ seance.tuteur.get_full_name|default:seance.tuteur.username }}</p>
+                            <p><strong>📅 Date :</strong> {{ seance.date|date:"l d F Y" }}</p>
+                            <p><strong>🕐 Horaire :</strong> {{ seance.heure_debut|time:"H:i" }} - {{ seance.heure_fin|time:"H:i" }}</p>
+                            <p><strong>📍 Lieu :</strong> {{ seance.lieu }}</p>
+                            <p><strong>👥 Places disponibles :</strong> 
+                                <span class="badge {% if seance.places_restantes > 5 %}bg-success{% elif seance.places_restantes > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ seance.places_restantes }} / {{ seance.places_max }}
+                                </span>
+                            </p>
+                            <hr>
+                            <p class="text-muted">{{ seance.description|truncatewords:20 }}</p>
+                        </div>
+                        <div class="card-footer">
+                            {% if seance.est_complet %}
+                                <button class="btn btn-secondary w-100" disabled>
+                                    Complet
+                                </button>
+                            {% else %}
+                                <a href="{% url 'inscrire_seance' seance.pk %}" class="btn btn-success w-100">
+                                    ✅ S'inscrire
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h4>📭 Aucune séance disponible</h4>
+                <p>Il n'y a pas de séance de tutorat planifiée pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

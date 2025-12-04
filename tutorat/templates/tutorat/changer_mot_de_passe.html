@@ -1,0 +1,32 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Changement de mot de passe obligatoire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h3 class="mb-0">🔒 Changement de mot de passe obligatoire</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Sécurité :</strong> Pour des raisons de sécurité, vous devez changer votre mot de passe temporaire avant de continuer.
+                </div>
+                
+                <p class="mb-4">Veuillez choisir un nouveau mot de passe sécurisé.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <button type="submit" class="btn btn-warning w-100 mt-3">
+                        ✅ Changer mon mot de passe
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

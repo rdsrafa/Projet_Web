@@ -1,0 +1,47 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Se Désinscrire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0">❌ Confirmer la Désinscription</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Attention !</strong> Vous allez vous désinscrire de cette séance.
+                </div>
+                
+                <p>Êtes-vous sûr de vouloir vous désinscrire de cette séance ?</p>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ inscription.seance.titre }}</h5>
+                        <p class="card-text">
+                            <strong>Matière :</strong> {{ inscription.seance.matiere }}<br>
+                            <strong>Tuteur :</strong> {{ inscription.seance.tuteur.get_full_name|default:inscription.seance.tuteur.username }}<br>
+                            <strong>Date :</strong> {{ inscription.seance.date|date:"d/m/Y" }}<br>
+                            <strong>Horaire :</strong> {{ inscription.seance.heure_debut|time:"H:i" }} - {{ inscription.seance.heure_fin|time:"H:i" }}<br>
+                            <strong>Lieu :</strong> {{ inscription.seance.lieu }}
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'mes_inscriptions' %}" class="btn btn-secondary">
+                            ← Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            ❌ Confirmer la désinscription
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

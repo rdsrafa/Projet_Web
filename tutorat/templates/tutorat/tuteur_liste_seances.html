@@ -1,0 +1,70 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Mes Séances - Tuteur{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>📅 Mes Séances de Tutorat</h1>
+            <a href="{% url 'creer_seance' %}" class="btn btn-primary">
+                ➕ Créer une nouvelle séance
+            </a>
+        </div>
+        
+        {% if seances %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Titre</th>
+                            <th>Matière</th>
+                            <th>Date</th>
+                            <th>Horaire</th>
+                            <th>Lieu</th>
+                            <th>Places</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seance in seances %}
+                        <tr>
+                            <td><strong>{{ seance.titre }}</strong></td>
+                            <td>{{ seance.matiere }}</td>
+                            <td>{{ seance.date|date:"d/m/Y" }}</td>
+                            <td>{{ seance.heure_debut|time:"H:i" }} - {{ seance.heure_fin|time:"H:i" }}</td>
+                            <td>{{ seance.lieu }}</td>
+                            <td>
+                                <span class="badge {% if seance.places_restantes > 5 %}bg-success{% elif seance.places_restantes > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ seance.places_restantes }} / {{ seance.places_max }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if seance.statut == 'planifiee' %}bg-info
+                                    {% elif seance.statut == 'en_cours' %}bg-primary
+                                    {% elif seance.statut == 'terminee' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ seance.get_statut_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'modifier_seance' seance.pk %}" class="btn btn-sm btn-warning">✏️ Modifier</a>
+                                <a href="{% url 'supprimer_seance' seance.pk %}" class="btn btn-sm btn-danger">🗑️ Supprimer</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h4>📭 Aucune séance</h4>
+                <p>Vous n'avez pas encore créé de séance de tutorat.</p>
+                <a href="{% url 'creer_seance' %}" class="btn btn-primary">Créer ma première séance</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

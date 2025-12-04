@@ -1,0 +1,47 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Supprimer une Séance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0">🗑️ Confirmer la Suppression</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Attention !</strong> Cette action est irréversible.
+                </div>
+                
+                <p>Êtes-vous sûr de vouloir supprimer cette séance ?</p>
+                
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ seance.titre }}</h5>
+                        <p class="card-text">
+                            <strong>Matière :</strong> {{ seance.matiere }}<br>
+                            <strong>Date :</strong> {{ seance.date|date:"d/m/Y" }}<br>
+                            <strong>Horaire :</strong> {{ seance.heure_debut|time:"H:i" }} - {{ seance.heure_fin|time:"H:i" }}<br>
+                            <strong>Lieu :</strong> {{ seance.lieu }}<br>
+                            <strong>Inscrits :</strong> {{ seance.inscriptions.count }} étudiant(s)
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-secondary">
+                            ← Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Confirmer la suppression
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

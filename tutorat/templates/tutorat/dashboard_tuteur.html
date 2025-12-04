@@ -1,0 +1,62 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Tableau de bord - Tuteur{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>👨‍🏫 Tableau de bord Tuteur</h1>
+        
+        <div class="alert alert-info">
+            <h4 class="mb-2">Bienvenue {{ user.get_full_name|default:user.username }} !</h4>
+            <p class="mb-0">Vous êtes connecté en tant que <strong>Tuteur</strong>.</p>
+        </div>
+        
+        <div class="row mt-4 g-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>📅</h3>
+                        <h5>Calendrier</h5>
+                        <p class="text-muted">Vue calendrier de mes séances</p>
+                        <a href="{% url 'calendrier_tuteur' %}" class="btn btn-primary w-100">Voir</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>📋</h3>
+                        <h5>Mes Séances</h5>
+                        <p class="text-muted">Liste de mes séances</p>
+                        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-primary w-100">Accéder</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>➕</h3>
+                        <h5>Créer une Séance</h5>
+                        <p class="text-muted">Planifier une nouvelle séance</p>
+                        <a href="{% url 'creer_seance' %}" class="btn btn-success w-100">Créer</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+            <h3>💬</h3>
+            <h5>Forum</h5>
+            <p class="text-muted">Participer aux discussions</p>
+            <a href="{% url 'forum_liste' %}" class="btn btn-primary">Accéder</a>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

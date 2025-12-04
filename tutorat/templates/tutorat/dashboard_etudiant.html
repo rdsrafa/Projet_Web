@@ -1,0 +1,62 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Tableau de bord - Étudiant{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>👨‍🎓 Tableau de bord Étudiant</h1>
+        
+        <div class="alert alert-success">
+            <h4 class="mb-2">Bienvenue {{ user.get_full_name|default:user.username }} !</h4>
+            <p class="mb-0">Vous êtes connecté en tant qu'<strong>Étudiant</strong>.</p>
+        </div>
+        
+        <div class="row mt-4 g-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>📅</h3>
+                        <h5>Calendrier</h5>
+                        <p class="text-muted">Vue calendrier des séances</p>
+                        <a href="{% url 'calendrier_etudiant' %}" class="btn btn-success w-100">Voir</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>📚</h3>
+                        <h5>Séances Disponibles</h5>
+                        <p class="text-muted">S'inscrire aux séances</p>
+                        <a href="{% url 'liste_seances_etudiant' %}" class="btn btn-success w-100">Accéder</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <h3>✅</h3>
+                        <h5>Mes Inscriptions</h5>
+                        <p class="text-muted">Séances auxquelles je suis inscrit</p>
+                        <a href="{% url 'mes_inscriptions' %}" class="btn btn-success w-100">Accéder</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+            <h3>💬</h3>
+            <h5>Forum</h5>
+            <p class="text-muted">Poser des questions</p>
+            <a href="{% url 'forum_liste' %}" class="btn btn-success">Accéder</a>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

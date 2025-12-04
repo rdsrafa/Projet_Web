@@ -1,0 +1,35 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nouveau Sujet - Forum{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <a href="{% url 'forum_liste' %}" class="btn btn-secondary mb-3">← Retour au forum</a>
+
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">➕ Créer un Nouveau Sujet</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum_liste' %}" class="btn btn-secondary">
+                            ← Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            ✅ Créer le sujet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

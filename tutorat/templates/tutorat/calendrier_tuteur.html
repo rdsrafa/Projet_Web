@@ -1,0 +1,104 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Calendrier - Tuteur{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>📅 Mon Calendrier de Tutorat</h1>
+            <div>
+                <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-secondary">
+                    📋 Vue Liste
+                </a>
+                <a href="{% url 'creer_seance' %}" class="btn btn-primary">
+                    ➕ Créer une séance
+                </a>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <h5>Légende :</h5>
+            <span class="badge bg-primary me-2">■ Planifiée</span>
+            <span class="badge bg-success me-2">■ En cours</span>
+            <span class="badge bg-secondary me-2">■ Terminée</span>
+            <span class="badge bg-danger me-2">■ Annulée</span>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour afficher les détails de la séance -->
+<div class="modal fade" id="seanceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <a href="#" id="modalEditBtn" class="btn btn-warning">✏️ Modifier</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: 'fr',
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: "Aujourd'hui",
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        },
+        events: '{% url "api_seances_tuteur" %}',
+        eventClick: function(info) {
+            info.jsEvent.preventDefault();
+            
+            var props = info.event.extendedProps;
+            
+            document.getElementById('modalTitle').textContent = info.event.title;
+            document.getElementById('modalBody').innerHTML = `
+                <p><strong>📖 Matière :</strong> ${props.matiere}</p>
+                <p><strong>📍 Lieu :</strong> ${props.lieu}</p>
+                <p><strong>📝 Description :</strong> ${props.description}</p>
+                <p><strong>📊 Statut :</strong> <span class="badge bg-info">${props.statut}</span></p>
+                <p><strong>👥 Inscrits :</strong> ${props.inscrits}</p>
+                <p><strong>🕐 Début :</strong> ${info.event.start.toLocaleString('fr-FR')}</p>
+                <p><strong>🕐 Fin :</strong> ${info.event.end.toLocaleString('fr-FR')}</p>
+            `;
+            
+            document.getElementById('modalEditBtn').href = `/seances/tuteur/modifier-seance/${info.event.id}/`;
+            
+            var modal = new bootstrap.Modal(document.getElementById('seanceModal'));
+            modal.show();
+        },
+        height: 650,
+        contentHeight: 600
+    });
+    
+    calendar.render();
+});
+</script>
+{% endblock %}
