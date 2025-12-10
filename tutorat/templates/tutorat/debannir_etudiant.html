@@ -1,0 +1,59 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Débannir un étudiant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-success mt-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-unlock-fill me-2"></i>
+                    Débannir un étudiant
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <div>
+                        <strong>Information :</strong> Vous êtes sur le point de débannir un étudiant.
+                    </div>
+                </div>
+                
+                <h5 class="mb-2 d-flex align-items-center">
+                    <i class="bi bi-person-badge me-2"></i>
+                    Informations de l'étudiant :
+                </h5>
+                <ul class="list-unstyled mb-3">
+                    <li><strong>Nom :</strong> {{ bannissement.etudiant.get_full_name|default_if_none:bannissement.etudiant.username }}</li>
+                    <li><strong>Email :</strong> {{ bannissement.etudiant.email|default_if_none:"Non renseigné" }}</li>
+                    <li><strong>Banni le :</strong> {{ bannissement.date_bannissement|date:"d/m/Y à H:i" }}</li>
+                    <li><strong>Raison :</strong> {{ bannissement.raison|default_if_none:"Aucune raison spécifiée" }}</li>
+                </ul>
+                
+                <hr>
+                
+                <p class="text-muted">
+                    Après débannissement, cet étudiant pourra à nouveau s'inscrire à vos séances.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste_bannis' %}"
+                           class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-success d-flex align-items-center">
+                            <i class="bi bi-unlock-fill me-1"></i>
+                            Confirmer le débannissement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

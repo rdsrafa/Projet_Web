@@ -1,0 +1,119 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Créer une séance{% endblock %}
+
+{% block content %}
+<!-- En-tête de page -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <!-- Icône carrée bleu foncé -->
+            <div class="d-flex align-items-center justify-content-center me-3"
+                 style="width: 60px; height: 60px; border-radius: 16px;
+                        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                        color: #ffffff; font-size: 1.8rem;">
+                <i class="bi bi-plus-circle"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-1">Créer une nouvelle séance</h1>
+                <p class="text-muted mb-0">
+                    Planifiez une séance de tutorat pour vos étudiants.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Formulaire -->
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-white"
+                 style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: #ffffff;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    <h3 class="mb-0 fs-5 text-white">
+                        Informations de la séance
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Affichage des erreurs globales (non_field_errors) -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Erreur :</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Matière + statut -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.matiere|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.statut|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    {{ form.titre|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+
+                    <!-- Date + heures - AVEC MESSAGES D'AIDE -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.date|as_crispy_field }}
+                            <small class="text-muted">Sauf les dimanches</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.heure_debut|as_crispy_field }}
+                                <small class="text-muted">Entre 8h30 et 21h</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.heure_fin|as_crispy_field }}
+                                <small class="text-muted">Jusqu'à 21h</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lieu + places -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.lieu|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.places_max|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Annuler
+                        </a>
+                        <button type="submit"
+                                class="btn text-white fw-semibold"
+                                style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none;">
+                            <i class="bi bi-check-lg me-1"></i> Créer la séance
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

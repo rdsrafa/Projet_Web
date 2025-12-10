@@ -1,0 +1,394 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Nouvelle conversation{% endblock %}
+
+{% block content %}
+<style>
+    .nouvelle-conversation-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-back {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        border-radius: 12px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        font-size: 0.92rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+
+    .btn-back:hover {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        color: #334155;
+        transform: translateX(-4px);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    }
+
+    .btn-back i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-back:hover i {
+        transform: translateX(-2px);
+    }
+
+    .conversation-card {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 10px 30px rgba(15, 23, 42, 0.04);
+        background: #fff;
+        margin-top: 1.5rem;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+        border: none !important;
+        padding: 1.5rem 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+        pointer-events: none;
+    }
+
+    .card-header h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .card-header i {
+        font-size: 1.3rem;
+        opacity: 0.95;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Alert info */
+    .alert-info {
+        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        color: #0c4a6e;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+    }
+
+    .alert-info i {
+        font-size: 1.1rem;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+    }
+
+    /* Style pour les champs du formulaire */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.92rem;
+        color: #1e293b;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .form-control, 
+    .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #f8fafc;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #2c3e50;
+        box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
+        background: #ffffff;
+        outline: none;
+    }
+
+    .form-control:hover:not(:focus),
+    .form-select:hover:not(:focus) {
+        border-color: #cbd5e1;
+        background: #ffffff;
+    }
+
+    textarea.form-control {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 0.4rem;
+        display: block;
+    }
+
+    /* Boutons */
+    .btn-submit-wrapper {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+        background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+    }
+
+    .btn-primary i {
+        font-size: 1.1rem;
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid #e2e8f0;
+        color: #475569;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #ffffff;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #334155;
+        transform: translateY(-1px);
+    }
+
+    /* Card conseil */
+    .conseil-card {
+        border-radius: 16px;
+        border: none;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        margin-top: 1.5rem;
+    }
+
+    .conseil-card .card-body {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .conseil-card h6 {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .conseil-card .text-warning {
+        color: #f59e0b !important;
+    }
+
+    .conseil-card p {
+        font-size: 0.88rem;
+        color: #64748b;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Style amélioré pour les selects */
+    select.form-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%232c3e50' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        padding-right: 2.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .nouvelle-conversation-wrapper {
+            padding: 1rem 0.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem 1.25rem;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-header h5 {
+            font-size: 1.05rem;
+        }
+
+        .btn-submit-wrapper {
+            flex-direction: column-reverse;
+        }
+
+        .btn-primary,
+        .btn-outline-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="nouvelle-conversation-wrapper">
+    <a href="{% url 'messagerie_liste' %}" class="btn btn-back">
+        <i class="bi bi-arrow-left"></i> Retour à la messagerie
+    </a>
+
+    <div class="card shadow-sm conversation-card">
+        <div class="card-header bg-primary text-white">
+            <h5>
+                <i class="bi bi-envelope-plus me-2"></i>Nouvelle conversation
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle-fill"></i>
+                <div>Sélectionnez un utilisateur et écrivez votre premier message pour démarrer une conversation.</div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Sélection destinataire -->
+                <div class="mb-4">
+                    <label for="destinataire" class="form-label">
+                        <i class="bi bi-person-fill"></i>Destinataire
+                    </label>
+                    <select name="destinataire" id="destinataire" class="form-select" required>
+                        <option value="">-- Choisir un utilisateur --</option>
+                        {% for user in utilisateurs %}
+                            <option value="{{ user.pk }}" 
+                                    {% if destinataire_preselectionne and destinataire_preselectionne.pk == user.pk %}selected{% endif %}>
+                                {{ user.get_full_name|default:user.username }} ({{ user.get_role_display }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Message -->
+                <div class="mb-4">
+                    <label for="content" class="form-label">
+                        <i class="bi bi-chat-left-text-fill"></i>Message
+                    </label>
+                    <textarea name="content" 
+                              id="content" 
+                              class="form-control" 
+                              rows="6" 
+                              placeholder="Écrivez votre message..."
+                              required></textarea>
+                    <small class="form-text">Votre premier message pour démarrer la conversation</small>
+                </div>
+
+                <!-- Boutons -->
+                <div class="btn-submit-wrapper">
+                    <a href="{% url 'messagerie_liste' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i>Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send-fill"></i>Envoyer le message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Conseil -->
+    <div class="card border-0 shadow-sm conseil-card">
+        <div class="card-body">
+            <h6>
+                <i class="bi bi-lightbulb-fill text-warning"></i>Conseil
+            </h6>
+            <p>
+                Si une conversation existe déjà avec cet utilisateur, votre message sera ajouté à celle-ci.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus sur le select au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    const selectElement = document.getElementById('destinataire');
+    if (selectElement && !selectElement.value) {
+        selectElement.focus();
+    }
+});
+</script>
+
+{% endblock %}

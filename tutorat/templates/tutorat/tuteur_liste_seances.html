@@ -1,0 +1,138 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Mes séances - Tuteur{% endblock %}
+
+{% block content %}
+<!-- En-tête page -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <!-- Icône -->
+                <div class="d-flex align-items-center justify-content-center me-3"
+                    style="width: 60px; height: 60px; border-radius: 16px;
+                        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+                        color: #ffffff; font-size: 1.8rem;">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div>
+                    <h1 class="h3 mb-1">Mes séances de tutorat</h1>
+                    <p class="text-muted mb-0">
+                        Consultez, gérez et suivez toutes vos séances planifiées.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Boutons actions -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'liste_bannis' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-slash-circle me-1"></i>
+                    Étudiants bannis
+                    {% if nb_bannis > 0 %}
+                        <span class="badge bg-danger ms-1">{{ nb_bannis }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'creer_seance' %}"
+                class="btn text-white fw-semibold"
+                style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); border: none;">
+                    <i class="bi bi-plus-lg me-1"></i> Nouvelle séance
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tableau des séances -->
+<div class="row">
+    <div class="col-12">
+        {% if seances %}
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-dark">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Titre</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Matière</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Date</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Horaire</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Lieu</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Places</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Statut</th>
+                                    <th class="text-end fw-semibold" style="color:#374151 !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seance in seances %}
+                                <tr>
+                                    <td class="fw-semibold">{{ seance.titre }}</td>
+                                    <td>{{ seance.matiere }}</td>
+                                    <td>{{ seance.date|date:"d/m/Y" }}</td>
+                                    <td>{{ seance.heure_debut|time:"H:i" }} – {{ seance.heure_fin|time:"H:i" }}</td>
+                                    <td>{{ seance.lieu|default:"—" }}</td>
+                                    <td>
+                                        <span class="badge
+                                            {% if seance.places_restantes > 5 %} bg-success
+                                            {% elif seance.places_restantes > 0 %} bg-warning text-dark
+                                            {% else %} bg-danger {% endif %}">
+                                            {{ seance.places_restantes }} / {{ seance.places_max }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge
+                                            {% if seance.statut == 'planifiee' %} bg-info text-dark
+                                            {% elif seance.statut == 'en_cours' %} bg-primary
+                                            {% elif seance.statut == 'terminee' %} bg-success
+                                            {% else %} bg-secondary {% endif %}">
+                                            {{ seance.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'voir_inscrits' seance.pk %}"
+                                            class="btn btn-outline-info"
+                                            title="Voir les étudiants inscrits">
+                                                <i class="bi bi-people-fill me-1"></i>
+                                                {{ seance.inscriptions.count }}
+                                            </a>
+                                            <a href="{% url 'modifier_seance' seance.pk %}"
+                                            class="btn btn-outline-warning"
+                                            title="Modifier la séance">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="{% url 'supprimer_seance' seance.pk %}"
+                                            class="btn btn-outline-danger"
+                                            title="Supprimer la séance">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center py-5 text-dark">
+                    <div class="mb-3">
+                        <i class="bi bi-calendar-x" style="font-size: 3rem; color: #6c757d; opacity: .5;"></i>
+                    </div>
+                    <h4 class="mb-2">Aucune séance pour le moment</h4>
+                    <p class="text-muted mb-4">
+                        Créez votre première séance de tutorat pour commencer à accueillir des étudiants.
+                    </p>
+                    <a href="{% url 'creer_seance' %}"
+                    class="btn text-white fw-semibold"
+                    style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); border: none;">
+                        <i class="bi bi-plus-lg me-1"></i> Créer ma première séance
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

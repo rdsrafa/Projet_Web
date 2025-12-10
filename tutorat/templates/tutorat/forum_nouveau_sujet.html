@@ -1,0 +1,68 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nouveau Sujet - Forum{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8 d-flex justify-content-between align-items-center">
+        <!-- Titre + icône -->
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-center me-3"
+                 style="width: 60px; height: 60px; border-radius: 16px;
+                        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                        color: #ffffff; font-size: 1.8rem;">
+                <i class="bi bi-chat-dots-fill"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-1">Nouveau sujet</h1>
+                <p class="text-muted mb-0">Posez une question ou lancez une discussion</p>
+            </div>
+        </div>
+
+        <a href="{% url 'forum_liste' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour au forum
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <a href="{% url 'forum_liste' %}" class="btn btn-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i> Retour au forum
+        </a>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header text-white"
+                 style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    <h3 class="mb-0 fs-5 text-white">Créer un Nouveau Sujet</h3>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum_liste' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Annuler
+                        </a>
+
+                        <button type="submit"
+                                class="btn text-white fw-semibold"
+                                style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                                       border: none;">
+                            <i class="bi bi-send-fill me-1"></i> Créer le sujet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

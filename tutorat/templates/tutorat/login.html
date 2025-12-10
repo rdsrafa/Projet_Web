@@ -1,0 +1,113 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Connexion - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg">
+            <div class="card-header text-center" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                <i class="bi bi-mortarboard-fill" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h3 class="mb-0" style="color: white;">Connexion</h3>
+                <p class="mb-0 mt-2" style="opacity: 0.9;">Accédez à votre espace personnel</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="bi bi-person-fill text-primary"></i> Nom d'utilisateur
+                        </label>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                            id="id_username"
+                            placeholder="Entrez votre nom d'utilisateur"
+                            required
+                            autocomplete="username"
+                            value="{{ form.username.value|default:'' }}"
+                        >
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">
+                            <i class="bi bi-lock-fill text-primary"></i> Mot de passe
+                        </label>
+                        <div class="position-relative">
+                            <input 
+                                type="password" 
+                                name="password" 
+                                class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                                id="id_password"
+                                placeholder="Entrez votre mot de passe"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <span class="position-absolute top-50 end-0 translate-middle-y me-3" 
+                                  style="cursor: pointer;" 
+                                  onclick="togglePassword()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </span>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.password.errors.0 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Non-field errors -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary w-100 mt-3" style="padding: 0.9rem;">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Se connecter
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center mb-0">
+                    <i class="bi bi-person-plus-fill text-muted"></i>
+                    Pas encore de compte ? 
+                    <a href="{% url 'inscription_etudiant' %}" class="text-decoration-none fw-bold">
+                        S'inscrire en tant qu'étudiant
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('id_password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+    }
+}
+</script>
+{% endblock %}

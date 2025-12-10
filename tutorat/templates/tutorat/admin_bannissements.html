@@ -1,0 +1,207 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Gestion des bannissements - Admin{% endblock %}
+
+{% block content %}
+<style>
+    .ban-header-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: #fff;
+    }
+
+    .ban-stat-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 1.3rem 1.3rem 1.1rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        border: none;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ban-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .ban-stat-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 0.6rem auto;
+        color: #fff;
+    }
+
+    .ban-stat-icon.total   { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); } /* rouge */
+    .ban-stat-icon.tuteur  { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); } /* orange */
+    .ban-stat-icon.student { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); } /* bleu */
+
+    .ban-stat-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #7f8c8d;
+        margin-bottom: 0.1rem;
+    }
+
+    .ban-stat-value {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .card-ban-main {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .card-ban-main .card-header {
+        background-color: #e74c3c;
+        color: #fff;
+    }
+
+    .table-ban thead th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #7f8c8d;
+        border-bottom-width: 1px;
+    }
+
+    .table-ban tbody td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+    }
+</style>
+
+<!-- HEADER -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="d-flex align-items-center">
+            <div class="ban-header-icon me-3">
+                <i class="bi bi-slash-circle"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-1">Gestion des bannissements</h1>
+                <p class="text-muted mb-0">
+                    Vue globale de tous les bannissements effectués par les tuteurs.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="row mb-4 g-3">
+    <div class="col-md-4 col-sm-6">
+        <div class="ban-stat-card">
+            <div class="ban-stat-icon total">
+                <i class="bi bi-slash-circle-fill"></i>
+            </div>
+            <div class="ban-stat-label">Bannissements actifs</div>
+            <p class="ban-stat-value">{{ total_bannissements }}</p>
+            <p class="text-muted mb-0">
+                Bannissement{{ total_bannissements|pluralize }} actif{{ total_bannissements|pluralize }}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="ban-stat-card">
+            <div class="ban-stat-icon tuteur">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div class="ban-stat-label">Tuteurs concernés</div>
+            <p class="ban-stat-value">{{ tuteurs_avec_bannis }}</p>
+            <p class="text-muted mb-0">
+                Tuteur{{ tuteurs_avec_bannis|pluralize }} avec des bannis
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="ban-stat-card">
+            <div class="ban-stat-icon student">
+                <i class="bi bi-backpack-fill"></i>
+            </div>
+            <div class="ban-stat-label">Étudiants bannis</div>
+            <p class="ban-stat-value">{{ etudiants_bannis }}</p>
+            <p class="text-muted mb-0">
+                Étudiant{{ etudiants_bannis|pluralize }} banni{{ etudiants_bannis|pluralize }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- LISTE DES BANNISSEMENTS -->
+<div class="row">
+    <div class="col">
+        <div class="card card-ban-main shadow-sm">
+            <div class="card-header d-flex align-items-center">
+                <i class="bi bi-list-ul me-2"></i>
+                <h4 class="mb-0">Liste complète des bannissements</h4>
+            </div>
+            <div class="card-body">
+                {% if bannissements %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-ban">
+                            <thead>
+                                <tr>
+                                    <th>Étudiant banni</th>
+                                    <th>Email étudiant</th>
+                                    <th>Banni par (tuteur)</th>
+                                    <th>Raison</th>
+                                    <th>Date de bannissement</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bannissement in bannissements %}
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            {{ bannissement.etudiant.get_full_name|default:bannissement.etudiant.username }}
+                                        </strong>
+                                    </td>
+                                    <td>{{ bannissement.etudiant.email|default:"—" }}</td>
+                                    <td>{{ bannissement.tuteur.get_full_name|default:bannissement.tuteur.username }}</td>
+                                    <td>{{ bannissement.raison|default:"Aucune raison spécifiée"|truncatewords:10 }}</td>
+                                    <td>{{ bannissement.date_bannissement|date:"d/m/Y à H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'debannir_admin' bannissement.pk %}"
+                                           class="btn btn-sm btn-success"
+                                           title="Débannir cet étudiant">
+                                            ✅ Débannir
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-emoji-smile" style="font-size: 3rem; color:#2ecc71;"></i>
+                        <p class="mt-2 mb-0 text-muted">
+                            Aucun bannissement actif pour le moment.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

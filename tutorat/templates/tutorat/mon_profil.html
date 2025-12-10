@@ -1,0 +1,109 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <!-- Icône profil dans un carré -->
+            <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+                 style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                        color: white; width: 60px; height: 60px; font-size: 1.8rem;">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <div>
+                <h1 class="h3 mb-1">Mon profil</h1>
+                <p class="text-muted mb-0">
+                    Bonjour {{ user.get_full_name|default:user.username }}
+                    <i class="bi bi-hand-wave-fill text-warning"></i>
+                    Consultez et mettez à jour vos informations de compte.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Colonne Infos perso -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm dashboard-card" style="border-color: #2c3e50;">
+            <div class="card-header"
+                style="background-color: #2c3e50; color: white; display: flex; 
+                        justify-content: space-between; align-items: center;">
+                
+                <h4 class="mb-0" style="color: white;">
+                    <i class="bi bi-person-lines-fill me-2"></i>
+                    Informations personnelles
+                </h4>
+
+                <span class="badge bg-light text-dark">
+                    Rôle : {{ user.get_role_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Nom d'utilisateur :</div>
+                    <div class="col-md-8">{{ user.username }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Email :</div>
+                    <div class="col-md-8">{{ user.email|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Prénom :</div>
+                    <div class="col-md-8">{{ user.first_name|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Nom :</div>
+                    <div class="col-md-8">{{ user.last_name|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Téléphone :</div>
+                    <div class="col-md-8">{{ user.telephone|default:"Non renseigné" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-semibold">Membre depuis :</div>
+                    <div class="col-md-8">{{ user.date_inscription|date:"d/m/Y" }}</div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'modifier_profil' %}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-1"></i>
+                        Modifier mes informations
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne Sécurité -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-warning text-dark d-flex align-items-center">
+                <i class="bi bi-shield-lock-fill me-2"></i>
+                <h4 class="mb-0">Sécurité</h4>
+            </div>
+            <div class="card-body d-flex flex-column">
+                <p class="mb-3">
+                    Changez régulièrement votre mot de passe pour renforcer la
+                    sécurité de votre compte et protéger vos données.
+                </p>
+                <ul class="text-muted small mb-3">
+                    <li>Utilisez un mot de passe long et unique.</li>
+                    <li>Évitez de le réutiliser sur d'autres sites.</li>
+                    <li>Ne le partagez jamais avec personne.</li>
+                </ul>
+                <div class="mt-auto">
+                    <a href="{% url 'changer_mot_de_passe_profil' %}" class="btn btn-warning w-100">
+                        <i class="bi bi-key-fill me-1"></i>
+                        Changer mon mot de passe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

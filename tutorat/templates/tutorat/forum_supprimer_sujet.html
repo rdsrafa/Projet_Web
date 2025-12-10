@@ -1,0 +1,88 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Supprimer le Sujet{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8 d-flex justify-content-between align-items-center">
+        <!-- Titre + icône -->
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-center me-3"
+                 style="width: 56px; height: 56px; border-radius: 16px;
+                        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                        color: #ffffff; font-size: 1.6rem;">
+                <i class="bi bi-trash3-fill"></i>
+            </div>
+            <div>
+                <h1 class="h4 mb-1">Supprimer un sujet</h1>
+                <p class="text-muted mb-0">
+                    Cette action supprimera le sujet <strong>et toutes ses réponses</strong>.
+                </p>
+            </div>
+        </div>
+
+        <!-- Bouton retour -->
+        <a href="{% url 'forum_sujet' sujet.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour au sujet
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <!-- Header rouge -->
+            <div class="card-header text-white"
+                 style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <h3 class="mb-0 fs-5 text-white">Confirmer la suppression du sujet</h3>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning mb-4">
+                    <strong><i class="bi bi-exclamation-circle me-1"></i> Attention :</strong>
+                    Cette action est <strong>irréversible</strong>. Le sujet et l'ensemble de ses réponses
+                    seront définitivement supprimés.
+                </div>
+
+                <p class="mb-2">Êtes-vous sûr de vouloir supprimer ce sujet ?</p>
+
+                <!-- Aperçu du sujet -->
+                <div class="card border-0 mb-4" style="background-color: #f8f9fa;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">{{ sujet.titre }}</h5>
+                        <p class="card-text mb-2">
+                            <strong>Matière :</strong>
+                            {% if sujet.matiere %}
+                                {{ sujet.matiere }}
+                            {% else %}
+                                <span class="text-muted">Annonce générale</span>
+                            {% endif %}
+                            <br>
+                            <strong>Auteur :</strong> {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}<br>
+                            <strong>Réponses :</strong> {{ sujet.nombre_reponses }}
+                        </p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum_sujet' sujet.pk %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Annuler
+                        </a>
+                        <button type="submit"
+                                class="btn text-white fw-semibold"
+                                style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                                       border: none;">
+                            <i class="bi bi-trash3-fill me-1"></i> Confirmer la suppression
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

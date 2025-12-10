@@ -1,0 +1,134 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Forum - Tutorat{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Icône + textes -->
+            <div class="d-flex align-items-center">
+                <!-- Icône style MES INSCRIPTIONS mais en rouge pour le forum -->
+                <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+                    style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                            color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+
+                <!-- Texte à côté -->
+                <div>
+                    <h1 class="h3 mb-1">Forum</h1>
+                    <p class="text-muted mb-0">Posez vos questions et échangez</p>
+                </div>
+            </div>
+
+            <!-- Bouton nouveau sujet -->
+            <div>
+                <a href="{% url 'forum_nouveau_sujet' %}" class="btn btn-danger">
+                    <i class="bi bi-chat-dots-fill me-1"></i> Nouveau sujet
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtre par matière -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold">Filtrer par matière</label>
+                        <select name="matiere" class="form-select" onchange="this.form.submit()">
+                            <option value="">Toutes les matières</option>
+                            {% for matiere in matieres %}
+                                <option value="{{ matiere.id }}" {% if matiere.id|stringformat:"s" == matiere_selectionnee %}selected{% endif %}>
+                                    {{ matiere.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        {% if matiere_selectionnee %}
+                            <a href="{% url 'forum_liste' %}" class="btn btn-outline-secondary w-100">
+                                Réinitialiser le filtre
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des sujets -->
+{% if sujets %}
+    <div class="row">
+        <div class="col-md-12">
+            {% for sujet in sujets %}
+            <div class="card dashboard-card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">
+                                <a href="{% url 'forum_sujet' sujet.pk %}" class="text-decoration-none">
+                                    💬 {{ sujet.titre }}
+                                </a>
+                                {% if sujet.est_resolu %}
+                                    <span class="badge bg-success ms-2">✓ Résolu</span>
+                                {% endif %}
+                            </h5>
+
+                            <p class="card-text text-muted mb-2">
+                                {{ sujet.contenu|truncatewords:30 }}
+                            </p>
+
+                            <div class="d-flex flex-wrap gap-3 text-muted small">
+                                <span>
+                                    {% if sujet.matiere %}
+                                        📖 {{ sujet.matiere }}
+                                    {% else %}
+                                        <span class="badge bg-danger">📢 Annonce générale</span>
+                                    {% endif %}
+                                </span>
+                                <span>
+                                    👤 {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}
+                                    {% if sujet.auteur.is_admin %}
+                                        <span class="badge bg-warning ms-1">👑 Admin</span>
+                                    {% endif %}
+                                </span>
+                                <span>💬 {{ sujet.nombre_reponses }} réponse(s)</span>
+                                <span>🕐 {{ sujet.date_creation|date:"d/m/Y à H:i" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Badge bleu rond pour nouvelles réponses -->
+                            {% if sujet.auteur == user and sujet.nb_nouvelles_reponses > 0 %}
+                                <span class="badge rounded-pill bg-info" 
+                                      style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                                    {{ sujet.nb_nouvelles_reponses }}
+                                </span>
+                            {% endif %}
+
+                            {% if user == sujet.auteur or user.is_admin %}
+                                <a href="{% url 'forum_supprimer_sujet' sujet.pk %}" class="btn btn-sm btn-outline-danger">
+                                    🗑️
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4 class="alert-heading">📭 Aucun sujet pour le moment</h4>
+        <p class="mb-2">Aucun sujet de discussion n'a encore été créé sur le forum.</p>
+        <a href="{% url 'forum_nouveau_sujet' %}" class="btn btn-primary">Créer le premier sujet</a>
+    </div>
+{% endif %}
+{% endblock %}

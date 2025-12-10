@@ -1,0 +1,55 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <a href="{% url 'mon_profil' %}" class="btn btn-secondary mb-3 d-inline-flex align-items-center">
+            <i class="bi bi-arrow-left me-1"></i>
+            Retour au profil
+        </a>
+
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-primary text-white d-flex align-items-center">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Modifier mes informations
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    Mettez à jour vos informations personnelles. Ces données sont utilisées pour vos inscriptions,
+                    la messagerie et le tutorat.
+                </p>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="{% url 'mon_profil' %}" class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary d-flex align-items-center">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

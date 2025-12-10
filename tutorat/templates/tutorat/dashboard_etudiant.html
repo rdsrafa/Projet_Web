@@ -1,0 +1,208 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Tableau de bord - Étudiant{% endblock %}
+
+{% block content %}
+<!-- Welcome Card -->
+<div class="welcome-card fade-in">
+    <h1 style="color: white;"><i class="bi bi-mortarboard-fill"></i> Tableau de bord Étudiant</h1>
+    <p style="opacity: 0.9; margin: 0;">Bienvenue {{ user.get_full_name|default:user.username }} ! Gérez vos séances et suivez votre progression.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Colonne principale - Actions -->
+    <div class="col-lg-8">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow hover-lift dashboard-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stats-icon me-3" style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+                                <i class="bi bi-calendar-event-fill"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">Calendrier</h4>
+                                <p class="text-muted mb-0 small">Vue d'ensemble</p>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-3">Visualisez toutes vos séances dans un calendrier interactif</p>
+                        <a href="{% url 'calendrier_etudiant' %}" class="btn btn-primary w-100">
+                            <i class="bi bi-arrow-right-circle-fill me-2"></i>Voir le calendrier
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow hover-lift dashboard-card" style="animation-delay: 0.1s;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stats-icon me-3" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+                                <i class="bi bi-book-half"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">Séances</h4>
+                                <p class="text-muted mb-0 small">Disponibles</p>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-3">Parcourez et inscrivez-vous aux séances de tutorat</p>
+                        <a href="{% url 'liste_seances_etudiant' %}" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle-fill me-2"></i>S'inscrire
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow hover-lift dashboard-card" style="animation-delay: 0.2s;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stats-icon me-3" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+                                <i class="bi bi-list-check"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">Inscriptions</h4>
+                                <p class="text-muted mb-0 small">Mes séances</p>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-3">Consultez toutes vos séances inscrites</p>
+                        <!-- FONCTIONNALITÉ DU FICHIER 1: Bouton avec style inline complet -->
+                        <a href="{% url 'mes_inscriptions' %}" 
+                           class="btn w-100"
+                           style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none; color: white;">
+                            <i class="bi bi-eye-fill me-2"></i>Voir mes inscriptions
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow hover-lift dashboard-card" style="animation-delay: 0.3s;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="stats-icon me-3" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+                                <i class="bi bi-chat-square-text-fill"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-0">Forum</h4>
+                                <p class="text-muted mb-0 small">Communauté</p>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-3">Posez vos questions et échangez</p>
+                        <a href="{% url 'forum_liste' %}" class="btn btn-danger w-100">
+                            <i class="bi bi-chat-left-dots-fill me-2"></i>Accéder au forum
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prochaines séances -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card dashboard-card" style="animation-delay: 0.4s;">
+                    <div class="card-body">
+                        <h4 class="fw-bold mb-3">
+                            <i class="bi bi-clock-history text-primary"></i> Prochaines séances
+                        </h4>
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            Consultez vos inscriptions pour voir vos prochaines séances planifiées.
+                            <a href="{% url 'mes_inscriptions' %}" class="alert-link fw-bold">Voir mes inscriptions →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Colonne latérale - Statistiques et infos -->
+    <div class="col-lg-4">
+        <!-- Statistiques -->
+        <div class="card border-0 shadow-sm dashboard-card mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-4">
+                    <i class="bi bi-graph-up text-primary"></i> Mes statistiques
+                </h5>
+                
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
+                                <i class="bi bi-calendar-check text-white"></i>
+                            </div>
+                            <span class="fw-semibold">Inscriptions actives</span>
+                        </div>
+                        <span class="badge bg-primary rounded-pill fs-6">{{ mes_inscriptions_count|default:0 }}</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                                <i class="bi bi-book text-white"></i>
+                            </div>
+                            <span class="fw-semibold">Séances disponibles</span>
+                        </div>
+                        <span class="badge bg-success rounded-pill fs-6">{{ seances_disponibles_count|default:0 }}</span>
+                    </div>
+                </div>
+                
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                                <i class="bi bi-check-circle text-white"></i>
+                            </div>
+                            <span class="fw-semibold">Séances terminées</span>
+                        </div>
+                        <span class="badge bg-info rounded-pill fs-6">{{ seances_terminees_count|default:0 }}</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                                <i class="bi bi-chat-dots text-white"></i>
+                            </div>
+                            <span class="fw-semibold">Mes sujets forum</span>
+                        </div>
+                        <span class="badge bg-danger rounded-pill fs-6">{{ mes_sujets_forum_count|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card border-0 shadow-sm dashboard-card" style="animation-delay: 0.1s; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-lightning-charge-fill text-warning"></i> Accès rapides
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'liste_seances_etudiant' %}" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-search me-2"></i>Trouver une séance
+                    </a>
+                    <a href="{% url 'forum_liste' %}" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-question-circle me-2"></i>Poser une question
+                    </a>
+                    <a href="{% url 'mon_profil' %}" class="btn btn-outline-primary text-start">
+                        <i class="bi bi-person-gear me-2"></i>Mon profil
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Aide - FONCTIONNALITÉ DU FICHIER 1: "administrateur" au lieu de "tuteur" -->
+        <div class="card border-0 shadow-sm mt-4 dashboard-card" style="animation-delay: 0.2s; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+            <div class="card-body text-center">
+                <i class="bi bi-info-circle-fill" style="font-size: 3rem; opacity: 0.9;"></i>
+                <h6 class="fw-bold mt-3 mb-2" style="color: white;">Besoin d'aide ?</h6>
+                <p class="small mb-0" style="opacity: 0.9;">Consultez le forum ou contactez un administrateur</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

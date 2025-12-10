@@ -1,0 +1,577 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Calendrier - Tuteur{% endblock %}
+
+{% block content %}
+<style>
+    .stats-icon {
+        border-radius: 14px;
+    }
+
+    /* Popover de détail de séance - Design moderne */
+    #event-detail-popover {
+        position: absolute;
+        display: none;
+        z-index: 1050;
+        max-width: 420px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 0 1px rgba(0,0,0,0.1);
+        border: none;
+        background-color: #ffffff;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* En-tête avec gradient moderne */
+    .event-detail-header {
+        background: #2c3e50;
+        color: #ffffff;
+        padding: 1.2rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-detail-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .event-detail-header h6 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        color: #ffffff !important;         
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .event-detail-header h6 i {
+        color: #ffffff !important;           
+    }
+
+    .event-detail-close {
+        position: relative;
+        z-index: 1;
+        opacity: 0.9;
+        transition: all 0.2s;
+    }
+
+    .event-detail-close:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+
+    /* Corps de la carte */
+    .event-detail-body {
+        padding: 1.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+    }
+
+    /* Scrollbar personnalisée */
+    .event-detail-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .event-detail-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .event-detail-body::-webkit-scrollbar-thumb {
+        background: #2c3e50;
+        border-radius: 10px;
+    }
+
+    /* Sections d'information */
+    .event-info-section {
+        margin-bottom: 1.2rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 1px solid rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+    }
+
+    .event-info-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .event-detail-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .event-detail-value {
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .event-detail-value i {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #2c3e50;
+        color: white;
+        font-size: 0.8rem;
+    }
+
+    /* Badge de statut moderne */
+    .event-detail-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .event-detail-badge::before {
+        content: "●";
+        font-size: 1rem;
+    }
+
+    .event-detail-badge-planifiee {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+    }
+
+    .event-detail-badge-en-cours {
+        background: linear-gradient(135deg, #198754 0%, #157347 100%);
+        color: white;
+        animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .event-detail-badge-terminee {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+    }
+
+    .event-detail-badge-annulee {
+        background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
+        color: white;
+    }
+
+    /* Description stylisée */
+    .event-detail-description {
+        padding: 1rem;
+        border-radius: 12px;
+        background: white;
+        border: 2px dashed rgba(102, 126, 234, 0.2);
+        font-size: 0.88rem;
+        color: #2c3e50;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    /* Section horaires */
+    .event-time-section {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+    }
+
+    .event-time-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .event-time-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+
+    .event-time-value {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    /* Séparateur élégant */
+    .elegant-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(102, 126, 234, 0.3), transparent);
+        margin: 1rem 0;
+    }
+
+    /* Footer de la carte */
+    .event-detail-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-top: 1px solid rgba(0,0,0,0.05);
+        gap: 0.5rem;
+    }
+
+    .event-detail-footer .btn {
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex align-items-center">
+            <!-- Icône calendrier -->
+            <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+                 style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                        color: #ffffff; width: 60px; height: 60px; border-radius: 16px; font-size: 1.8rem;">
+                <i class="bi bi-calendar3-event"></i>
+            </div>
+            <!-- Texte -->
+            <div>
+                <h1 class="h3 mb-1">Calendrier de mes séances</h1>
+                <p class="text-muted mb-0">
+                    Visualisez et gérez toutes vos séances de tutorat dans une vue calendrier claire.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Boutons d'action -->
+<div class="row mb-3">
+    <div class="col-12 d-flex justify-content-end gap-2">
+        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-list-ul me-1"></i> Vue liste
+        </a>
+        <a href="{% url 'creer_seance' %}"
+           class="btn text-white fw-semibold"
+           style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); border: none;">
+            <i class="bi bi-plus-lg me-1"></i> Nouvelle séance
+        </a>
+    </div>
+</div>
+
+<!-- Carte calendrier -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Légende -->
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">
+                    <i class="bi bi-palette me-2"></i>Légende
+                </h5>
+                <p class="mb-2">
+                    <span class="badge bg-primary me-2">■ Planifiée</span>
+                    <span class="badge bg-success me-2">■ En cours</span>
+                    <span class="badge bg-secondary me-2">■ Terminée</span>
+                    <span class="badge bg-danger me-2">■ Annulée</span>
+                </p>
+                <hr>
+                <p class="text-muted small mb-1">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Cliquez sur une séance dans le calendrier pour afficher les détails à côté.
+                </p>
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cliquez en dehors de la carte pour la fermer.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Carte flottante de détails de la séance -->
+<div id="event-detail-popover">
+    <div class="event-detail-header d-flex justify-content-between align-items-center">
+        <h6 id="event-detail-title">
+            <i class="bi bi-calendar-check me-2"></i>
+            Détails de la séance
+        </h6>
+        <button type="button"
+                class="btn-close btn-close-white event-detail-close"
+                id="event-detail-close"
+                aria-label="Fermer"></button>
+    </div>
+    <div class="event-detail-body" id="event-detail-body">
+        <!-- Contenu rempli en JS -->
+    </div>
+    <div class="event-detail-footer">
+        <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>Informations de la séance
+        </small>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" id="event-detail-close-btn">
+                Fermer
+            </button>
+            <a href="#" id="event-edit-btn" class="btn btn-sm btn-warning text-white">
+                <i class="bi bi-pencil-square me-1"></i> Modifier
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var popoverEl = document.getElementById('event-detail-popover');
+    var popoverTitleEl = document.getElementById('event-detail-title');
+    var popoverBodyEl = document.getElementById('event-detail-body');
+    var popoverCloseBtn = document.getElementById('event-detail-close');
+    var popoverCloseBtnFooter = document.getElementById('event-detail-close-btn');
+    var editBtn = document.getElementById('event-edit-btn');
+
+    // URL template pour l'édition
+    var editUrlTemplate = "{% url 'modifier_seance' 0 %}";
+
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function getStatusBadgeClass(statut) {
+        if (!statut) return "";
+        var s = statut.toLowerCase();
+        if (s.includes("planifi") || s.includes("prevue")) return "event-detail-badge-planifiee";
+        if (s.includes("cours")) return "event-detail-badge-en-cours";
+        if (s.includes("termin")) return "event-detail-badge-terminee";
+        if (s.includes("annul")) return "event-detail-badge-annulee";
+        return "";
+    }
+
+    function showPopover(info) {
+        var props = info.event.extendedProps || {};
+
+        // Formater les dates (FONCTIONNALITÉ DU FICHIER 1 avec format amélioré du fichier 2)
+        var dateDebut = new Date(info.event.start);
+        var heureDebut = dateDebut.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        var dateFormatee = dateDebut.toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
+
+        var startDate = info.event.start.toLocaleString('fr-FR', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        var heureFin = '';
+        var endDate = "Non renseignée";
+        if (info.event.end) {
+            var dateFin = new Date(info.event.end);
+            heureFin = dateFin.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            endDate = info.event.end.toLocaleString('fr-FR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        var description = props.description || "Aucune description fournie pour cette séance.";
+        description = escapeHtml(description);
+
+        popoverTitleEl.innerHTML = '<i class="bi bi-calendar-check me-2"></i>' + (info.event.title || "Séance");
+
+        var statut = props.statut || "—";
+        var statutClass = getStatusBadgeClass(statut);
+
+        var html = "";
+        
+        // Matière
+        html += "<div class='event-info-section'>";
+        html += "  <div class='event-detail-label'><i class='bi bi-book'></i> Matière</div>";
+        html += "  <div class='event-detail-value'><i class='bi bi-book-half'></i><strong>" + (props.matiere || "Non renseignée") + "</strong></div>";
+        html += "</div>";
+
+        // Tuteur (TOUJOURS "Vous" pour le tuteur - FONCTIONNALITÉ DU FICHIER 1)
+        html += "<div class='event-info-section'>";
+        html += "  <div class='event-detail-label'><i class='bi bi-person'></i> Tuteur</div>";
+        html += "  <div class='event-detail-value'><i class='bi bi-person-badge'></i>Vous</div>";
+        html += "</div>";
+
+        // Lieu
+        html += "<div class='event-info-section'>";
+        html += "  <div class='event-detail-label'><i class='bi bi-geo-alt'></i> Lieu</div>";
+        html += "  <div class='event-detail-value'><i class='bi bi-pin-map'></i>" + (props.lieu || "Non précisé") + "</div>";
+        html += "</div>";
+
+        // Description
+        html += "<div class='event-info-section'>";
+        html += "  <div class='event-detail-label'><i class='bi bi-file-text'></i> Description</div>";
+        html += "  <div class='event-detail-description'>" + description + "</div>";
+        html += "</div>";
+
+        html += "<div class='elegant-divider'></div>";
+
+        // Horaires
+        html += "<div class='event-time-section'>";
+        html += "  <div class='event-time-item'>";
+        html += "    <div class='event-time-label'><i class='bi bi-clock'></i> Début</div>";
+        html += "    <div class='event-time-value'>" + startDate + "</div>";
+        html += "  </div>";
+        html += "  <div class='event-time-item'>";
+        html += "    <div class='event-time-label'><i class='bi bi-clock-fill'></i> Fin</div>";
+        html += "    <div class='event-time-value'>" + endDate + "</div>";
+        html += "  </div>";
+        html += "</div>";
+
+        html += "<div class='elegant-divider'></div>";
+
+        // Statut
+        html += "<div class='text-center mb-3'>";
+        html += "  <div class='event-detail-label mb-2'><i class='bi bi-flag'></i> Statut de la séance</div>";
+        html += "  <span class='event-detail-badge " + statutClass + "'>" + statut + "</span>";
+        html += "</div>";
+
+        // Nombre d'inscrits (FONCTIONNALITÉ DU FICHIER 1)
+        html += "<div class='text-center'>";
+        html += "  <p class='mb-0'><strong>👥 Inscrits :</strong> " + (props.inscrits || "0") + "</p>";
+        html += "</div>";
+
+        popoverBodyEl.innerHTML = html;
+
+        // URL du bouton Modifier (FONCTIONNALITÉ DU FICHIER 1)
+        var editUrl = editUrlTemplate.replace('0/', info.event.id + '/');
+        editBtn.href = editUrl;
+
+        // Positionner la carte à côté du clic (FONCTIONNALITÉ DU FICHIER 1)
+        var x = info.jsEvent.pageX;
+        var y = info.jsEvent.pageY;
+
+        // Petit décalage pour ne pas être exactement sous la souris
+        var offsetX = 15;
+        var offsetY = 15;
+
+        // Vérifier si la carte dépasse à droite (amélioration du fichier 2)
+        var popoverWidth = 420;
+        if (x + popoverWidth + offsetX > window.innerWidth) {
+            x = x - popoverWidth - offsetX;
+        } else {
+            x = x + offsetX;
+        }
+
+        popoverEl.style.left = x + "px";
+        popoverEl.style.top = (y + offsetY) + "px";
+        popoverEl.style.display = "block";
+    }
+
+    function hidePopover() {
+        popoverEl.style.display = "none";
+    }
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: 'fr',
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: "Aujourd'hui",
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        },
+        events: '{% url "api_seances_tuteur" %}',
+        eventClick: function(info) {
+            info.jsEvent.preventDefault();
+            // On affiche / met à jour la carte à côté du cours
+            showPopover(info);
+        },
+        height: 650,
+        contentHeight: 600
+    });
+
+    calendar.render();
+
+    // Boutons de fermeture
+    popoverCloseBtn.addEventListener('click', function() {
+        hidePopover();
+    });
+    popoverCloseBtnFooter.addEventListener('click', function() {
+        hidePopover();
+    });
+
+    // Clic en dehors -> fermer la carte
+    document.addEventListener('click', function(e) {
+        // Si clic ni sur un événement FullCalendar ni dans la carte, on ferme
+        if (!e.target.closest('.fc-event') && !popoverEl.contains(e.target)) {
+            hidePopover();
+        }
+    });
+});
+</script>
+{% endblock %}

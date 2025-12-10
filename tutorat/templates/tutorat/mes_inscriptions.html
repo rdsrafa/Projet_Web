@@ -1,0 +1,176 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Mes Inscriptions{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12 d-flex align-items-center">
+        <!-- Icône -->
+        <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+             style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+                    color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0;
+                    border-radius: 16px;">
+            <i class="bi bi-list-check"></i>
+        </div>
+
+        <!-- Texte -->
+        <div>
+            <h1 class="h3 mb-1">Mes inscriptions</h1>
+            <p class="text-muted mb-0">Séances confirmées, à venir et historique</p>
+        </div>
+    </div>
+</div>
+
+{% if inscriptions_actives or inscriptions_historique %}
+
+    <!-- SÉANCES À VENIR -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white"
+                     style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        <h2 class="mb-0 fs-5 text-white">Séances à venir</h2>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive mb-0">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Séance</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Matière</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Tuteur</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Date</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Horaire</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Lieu</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Statut</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if inscriptions_actives %}
+                                    {% for inscription in inscriptions_actives %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ inscription.seance.titre }}</td>
+                                        <td>{{ inscription.seance.matiere }}</td>
+                                        <td>{{ inscription.seance.tuteur.get_full_name|default:inscription.seance.tuteur.username }}</td>
+                                        <td>{{ inscription.seance.date|date:"d/m/Y" }}</td>
+                                        <td>{{ inscription.seance.heure_debut|time:"H:i" }} – {{ inscription.seance.heure_fin|time:"H:i" }}</td>
+                                        <td>{{ inscription.seance.lieu|default:"—" }}</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                {{ inscription.get_statut_affichage_display }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'desinscrire_seance' inscription.pk %}"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-circle me-1"></i> Se désinscrire
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            Aucune séance à venir pour le moment.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted small mb-0 mt-2">
+                        Vous pouvez vous désinscrire d'une séance tant qu'elle n'a pas commencé.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white"
+                    style="background: linear-gradient(135deg, #7f8c8d 0%, #4b5a63 100%);">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock-history me-2"></i>
+                        <h2 class="mb-0 fs-5 text-white">Historique des séances</h2>
+                    </div>
+                </div>
+                <div class="card-body" style="background-color: #f8f9fb;">
+                    <div class="table-responsive mb-0">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Séance</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Matière</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Tuteur</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Date</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Horaire</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Lieu</th>
+                                    <th class="fw-semibold" style="color:#374151 !important;">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if inscriptions_historique %}
+                                    {% for inscription in inscriptions_historique %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ inscription.seance.titre }}</td>
+                                        <td>{{ inscription.seance.matiere }}</td>
+                                        <td>{{ inscription.seance.tuteur.get_full_name|default:inscription.seance.tuteur.username }}</td>
+                                        <td>{{ inscription.seance.date|date:"d/m/Y" }}</td>
+                                        <td>{{ inscription.seance.heure_debut|time:"H:i" }} – {{ inscription.seance.heure_fin|time:"H:i" }}</td>
+                                        <td>{{ inscription.seance.lieu|default:"—" }}</td>
+                                        <td>
+                                            {% with statut=inscription.statut_affichage %}
+                                            <span class="badge 
+                                                {% if statut == 'annulee' %}bg-danger
+                                                {% elif statut == 'terminee' %}bg-secondary
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ inscription.get_statut_affichage_display }}
+                                            </span>
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">
+                                            Aucun historique pour le moment.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted small mb-0 mt-2">
+                        Cet historique regroupe les séances terminées ou annulées.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-inboxes" style="font-size: 3rem; color: #6c757d; opacity: .5;"></i>
+            </div>
+            <h4 class="mb-2">Aucune inscription</h4>
+            <p class="text-muted mb-4">
+                Vous n'êtes inscrit à aucune séance pour le moment.
+            </p>
+            <a href="{% url 'liste_seances_etudiant' %}"
+               class="btn text-white fw-semibold"
+               style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); border: none;">
+                <i class="bi bi-search me-1"></i> Voir les séances disponibles
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

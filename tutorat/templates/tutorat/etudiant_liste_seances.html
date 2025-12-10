@@ -1,0 +1,70 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Séances Disponibles{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+    <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+         style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+                color: white; width: 60px; height: 60px; font-size: 1.8rem; margin-bottom: 0; border-radius: 14px;">
+        <i class="bi bi-book-half"></i>
+    </div>
+
+    <div>
+        <h1 class="h3 mb-1">Séances de tutorat</h1>
+        <p class="text-muted mb-0">Vue d'ensemble des séances planifiées</p>
+    </div>
+</div>
+
+{% if seances %}
+    <div class="row">
+        {% for seance in seances %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">{{ seance.titre }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>📚 Matière :</strong> {{ seance.matiere }}</p>
+                    <p><strong>👨‍🏫 Tuteur :</strong> {{ seance.tuteur.get_full_name|default_if_none:seance.tuteur.username }}</p>
+                    <p><strong>📅 Date :</strong> {{ seance.date|date:"l d F Y" }}</p>
+                    <p><strong>🕐 Horaire :</strong> {{ seance.heure_debut|time:"H:i" }} - {{ seance.heure_fin|time:"H:i" }}</p>
+                    <p><strong>📍 Lieu :</strong> {{ seance.lieu }}</p>
+                    <p><strong>👥 Places disponibles :</strong> 
+                        <span class="badge 
+                            {% if seance.places_restantes > 5 %}
+                                bg-success
+                            {% elif seance.places_restantes > 0 %}
+                                bg-warning
+                            {% else %}
+                                bg-danger
+                            {% endif %}
+                        ">
+                            {{ seance.places_restantes }} / {{ seance.places_max }}
+                        </span>
+                    </p>
+                    <hr>
+                    <p class="text-muted mb-0">{{ seance.description|default_if_none:"Aucune description" | truncatewords:20 }}</p>
+                </div>
+                <div class="card-footer bg-white">
+                    {% if seance.est_complet %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="bi bi-lock-fill me-1"></i> Complet
+                        </button>
+                    {% else %}
+                        <a href="{% url 'inscrire_seance' seance.pk %}" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle-fill me-1"></i> S'inscrire
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4><i class="bi bi-info-circle-fill me-2"></i>Aucune séance disponible</h4>
+        <p class="mb-0">Il n'y a pas de séance de tutorat planifiée pour le moment.</p>
+    </div>
+{% endif %}
+{% endblock %}

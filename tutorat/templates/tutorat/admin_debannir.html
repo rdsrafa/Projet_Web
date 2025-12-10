@@ -1,0 +1,61 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Débannir un étudiant - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-success mt-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-unlock-fill me-2"></i>
+                    Débannir un étudiant (admin)
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <div>
+                        <strong>Information :</strong>
+                        vous êtes sur le point de débannir un étudiant en tant qu'administrateur.
+                    </div>
+                </div>
+                
+                <h5 class="mb-2 d-flex align-items-center">
+                    <i class="bi bi-person-badge me-2"></i>
+                    Informations du bannissement
+                </h5>
+                <ul class="list-unstyled mb-3">
+                    <li><strong>Étudiant banni :</strong> {{ bannissement.etudiant.get_full_name|default:bannissement.etudiant.username }}</li>
+                    <li><strong>Email :</strong> {{ bannissement.etudiant.email|default:"Non renseigné" }}</li>
+                    <li><strong>Banni par :</strong> {{ bannissement.tuteur.get_full_name|default:bannissement.tuteur.username }}</li>
+                    <li><strong>Date du bannissement :</strong> {{ bannissement.date_bannissement|date:"d/m/Y à H:i" }}</li>
+                    <li><strong>Raison :</strong> {{ bannissement.raison|default:"Aucune raison spécifiée" }}</li>
+                </ul>
+                
+                <hr>
+                
+                <p class="text-muted">
+                    Après débannissement, cet étudiant pourra à nouveau s'inscrire aux séances de ce tuteur.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'gestion_bannissements_admin' %}"
+                           class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-success d-flex align-items-center">
+                            <i class="bi bi-unlock-fill me-1"></i>
+                            Confirmer le débannissement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

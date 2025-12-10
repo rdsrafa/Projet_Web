@@ -1,0 +1,56 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inscription Étudiant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-mortarboard-fill me-2"></i>
+                    Inscription Étudiant
+                </h3>
+                <span class="badge bg-light text-success d-flex align-items-center">
+                    <i class="bi bi-person-plus-fill me-1"></i>
+                    Nouveau compte
+                </span>
+            </div>
+
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    Créez votre compte étudiant pour accéder aux séances de tutorat, vous inscrire et suivre vos rendez-vous.
+                </p>
+
+                {# Erreurs globales du formulaire (ex : mots de passe non identiques, etc.) #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <button type="submit" class="btn btn-success w-100 mt-3 d-flex justify-content-center align-items-center">
+                        <i class="bi bi-check2-circle me-2"></i>
+                        Créer mon compte
+                    </button>
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+                    <span class="text-muted">Déjà un compte ?</span>
+                    <a href="{% url 'login' %}" class="fw-semibold ms-1 d-inline-flex align-items-center">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                        Se connecter
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

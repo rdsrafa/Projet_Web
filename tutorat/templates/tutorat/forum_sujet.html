@@ -1,0 +1,169 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ sujet.titre }} - Forum{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-center me-3"
+                 style="width: 56px; height: 56px; border-radius: 16px;
+                        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                        color: #ffffff; font-size: 1.6rem;">
+                <i class="bi bi-chat-dots-fill"></i>
+            </div>
+            <div>
+                <h1 class="h4 mb-1">{{ sujet.titre }}</h1>
+                <p class="text-muted mb-0">
+                    Discussion du forum de tutorat
+                </p>
+            </div>
+        </div>
+
+        <a href="{% url 'forum_liste' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Retour au forum
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <a href="{% url 'forum_liste' %}" class="btn btn-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i> Retour au forum
+        </a>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header text-white d-flex justify-content-between align-items-center"
+                 style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-chat-square-text-fill me-2"></i>
+                    <h3 class="mb-0 fs-5 text-white">{{ sujet.titre }}</h3>
+                </div>
+
+                {% if user == sujet.auteur or user.is_admin %}
+                    <a href="{% url 'forum_supprimer_sujet' sujet.pk %}"
+                       class="btn btn-sm btn-outline-light">
+                        <i class="bi bi-trash3-fill me-1"></i> Supprimer
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    {% if sujet.matiere %}
+                        <span class="badge bg-info text-dark me-2">
+                            <i class="bi bi-book-half me-1"></i> {{ sujet.matiere }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger me-2">
+                            <i class="bi bi-megaphone-fill me-1"></i> Annonce générale
+                        </span>
+                    {% endif %}
+
+                    {% if sujet.est_resolu %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> Résolu
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="card-text mb-3">{{ sujet.contenu|linebreaks }}</p>
+                <hr>
+
+                <div class="text-muted small d-flex flex-wrap align-items-center">
+                    <span class="me-2">
+                        <strong>Posté par :</strong>
+                        {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}
+                    </span>
+
+                    {% if sujet.auteur.is_admin %}
+                        <span class="badge bg-warning text-dark me-2">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                        </span>
+                    {% endif %}
+
+                    <span class="me-2">
+                        ({{ sujet.auteur.get_role_display }})
+                    </span>
+                    <span>
+                        <strong>le</strong> {{ sujet.date_creation|date:"d/m/Y à H:i" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-3">
+            <i class="bi bi-chat-left-dots me-1"></i>
+            Réponses ({{ reponses.count }})
+        </h4>
+
+        {% for reponse in reponses %}
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <p class="card-text mb-2">{{ reponse.contenu|linebreaks }}</p>
+                        <div class="text-muted small">
+                            <strong>{{ reponse.auteur.get_full_name|default:reponse.auteur.username }}</strong>
+
+                            {% if reponse.auteur.is_admin %}
+                                <span class="badge bg-warning text-dark ms-1">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                                </span>
+                            {% endif %}
+
+                            <span class="ms-1">({{ reponse.auteur.get_role_display }})</span>
+                            <span class="ms-2">- {{ reponse.date_creation|date:"d/m/Y à H:i" }}</span>
+                        </div>
+                    </div>
+
+                    {% if user == reponse.auteur or user.is_admin %}
+                        <a href="{% url 'forum_supprimer_reponse' reponse.pk %}"
+                           class="btn btn-sm btn-outline-danger ms-3"
+                           title="Supprimer cette réponse">
+                            <i class="bi bi-trash3-fill"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-secondary d-flex align-items-center">
+            <i class="bi bi-chat-left-text me-2"></i>
+            <div>
+                Aucune réponse pour le moment. Soyez le premier à répondre !
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header text-white"
+                 style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    <h5 class="mb-0 fs-6 text-white"> Ajouter une réponse</h5>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="d-flex justify-content-end mt-2">
+                        <button type="submit"
+                                class="btn text-white fw-semibold"
+                                style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+                                       border: none;">
+                            <i class="bi bi-chat-right-text-fill me-1"></i> Publier la réponse
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

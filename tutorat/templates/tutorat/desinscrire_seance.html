@@ -1,0 +1,59 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Se désinscrire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-danger mt-4">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-x-circle-fill me-2"></i>
+                    Confirmer la désinscription
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        <strong>Attention !</strong> Vous allez vous désinscrire de cette séance.
+                    </div>
+                </div>
+                
+                <p class="mb-3">
+                    Êtes-vous sûr de vouloir vous désinscrire de cette séance ?
+                </p>
+                
+                <div class="card mb-3 border-0 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">{{ inscription.seance.titre }}</h5>
+                        <p class="card-text mb-0">
+                            <strong>Matière :</strong> {{ inscription.seance.matiere }}<br>
+                            <strong>Tuteur :</strong> {{ inscription.seance.tuteur.get_full_name|default_if_none:inscription.seance.tuteur.username }}<br>
+                            <strong>Date :</strong> {{ inscription.seance.date|date:"d/m/Y" }}<br>
+                            <strong>Horaire :</strong> {{ inscription.seance.heure_debut|time:"H:i" }} - {{ inscription.seance.heure_fin|time:"H:i" }}<br>
+                            <strong>Lieu :</strong> {{ inscription.seance.lieu }}
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'mes_inscriptions' %}"
+                           class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger d-flex align-items-center">
+                            <i class="bi bi-x-circle-fill me-1"></i>
+                            Confirmer la désinscription
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

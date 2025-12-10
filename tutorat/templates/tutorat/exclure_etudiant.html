@@ -1,0 +1,108 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Exclure un étudiant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-danger mt-4">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-person-dash-fill me-2"></i>
+                    Exclure un étudiant
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        <strong>Attention !</strong> Vous êtes sur le point d'exclure un étudiant de cette séance.
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="d-flex align-items-center mb-2">
+                            <i class="bi bi-person-badge me-2"></i>
+                            Informations de l'étudiant :
+                        </h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Nom :</strong> {{ inscription.etudiant.get_full_name|default:inscription.etudiant.username }}</li>
+                            <li><strong>Email :</strong> {{ inscription.etudiant.email|default:"Non renseigné" }}</li>
+                            <li><strong>Téléphone :</strong> {{ inscription.etudiant.telephone|default:"Non renseigné" }}</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5 class="d-flex align-items-center mb-2">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            Séance concernée :
+                        </h5>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Titre :</strong> {{ inscription.seance.titre }}</li>
+                            <li>
+                                <strong>Date :</strong>
+                                {{ inscription.seance.date|date:"d/m/Y" }}
+                                à {{ inscription.seance.heure_debut|time:"H:i" }}
+                            </li>
+                            <li><strong>Lieu :</strong> {{ inscription.seance.lieu }}</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="raison" class="form-label d-flex align-items-center">
+                            <i class="bi bi-journal-text me-2"></i>
+                            Raison de l'exclusion (optionnel) :
+                        </label>
+                        <textarea
+                            class="form-control"
+                            id="raison"
+                            name="raison"
+                            rows="3"
+                            placeholder="Ex: Comportement inapproprié, absence répétée..."
+                        ></textarea>
+                    </div>
+                    
+                    <div class="card border-danger mb-3">
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bannir" name="bannir">
+                                <label class="form-check-label" for="bannir">
+                                    <span class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-slash-circle text-danger me-2"></i>
+                                        <strong class="text-danger">
+                                            Bannir cet étudiant de toutes mes séances futures
+                                        </strong>
+                                    </span>
+                                    <small class="text-muted">
+                                        L'étudiant ne pourra plus s'inscrire à aucune de vos séances. Vous pourrez le débannir plus tard si nécessaire.
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'voir_inscrits' inscription.seance.pk %}"
+                           class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-danger d-flex align-items-center">
+                            <i class="bi bi-person-dash-fill me-1"></i>
+                            Confirmer l'exclusion
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

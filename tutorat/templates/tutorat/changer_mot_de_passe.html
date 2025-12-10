@@ -1,0 +1,53 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Changement de mot de passe obligatoire{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <!-- Icône carré style plateforme -->
+            <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+                 style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+                        color: white; width: 60px; height: 60px; font-size: 1.8rem; border-radius: 14px;">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <!-- Titre + sous-titre -->
+            <div>
+                <h1 class="h3 mb-1">Changement de mot de passe obligatoire</h1>
+                <p class="text-muted mb-0">
+                    Pour des raisons de sécurité, vous devez définir un nouveau mot de passe
+                    avant de continuer à utiliser la plateforme.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-warning">
+            <div class="card-body">
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        Choisissez un mot de passe <strong>long, unique</strong> et difficile à deviner.
+                    </div>
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <button type="submit" class="btn btn-warning w-100 mt-3">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        Changer mon mot de passe
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

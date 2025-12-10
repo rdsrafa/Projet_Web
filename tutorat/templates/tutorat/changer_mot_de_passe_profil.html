@@ -1,0 +1,68 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Changer mon mot de passe{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center">
+            <!-- Icône carré style plateforme -->
+            <div class="stats-icon d-flex align-items-center justify-content-center me-3"
+                 style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+                        color: white; width: 60px; height: 60px; font-size: 1.8rem; border-radius: 14px;">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <!-- Titre + sous-titre -->
+            <div>
+                <h1 class="h3 mb-1">🔑 Changer mon mot de passe</h1>
+                <p class="text-muted mb-0">
+                    Modifiez votre mot de passe pour renforcer la sécurité de votre compte.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <!-- Bouton retour (FONCTIONNALITÉ DU FICHIER 1) -->
+        <a href="{% url 'mon_profil' %}" class="btn btn-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i> Retour au profil
+        </a>
+
+        <div class="card shadow-sm border-warning">
+            <div class="card-body">
+                <!-- Alert avec conseils (FONCTIONNALITÉ DU FICHIER 1 avec style du fichier 2) -->
+                <div class="alert alert-warning d-flex align-items-start">
+                    <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>💡 Conseils de sécurité :</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Utilisez au moins 8 caractères</li>
+                            <li>Mélangez majuscules, minuscules et chiffres</li>
+                            <li>Évitez les mots du dictionnaire</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <!-- Double bouton Annuler/Changer (FONCTIONNALITÉ DU FICHIER 1) -->
+                    <div class="d-flex justify-content-between mt-3 gap-2">
+                        <a href="{% url 'mon_profil' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle-fill me-1"></i> Changer le mot de passe
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'tutorat/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Modifier une Séance{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <!-- En-tête colorée -->
+            <div class="card-header text-white"
+                 style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #d35400 100%);">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px; border-radius: 12px;
+                                background: rgba(255,255,255,0.18);">
+                        <i class="bi bi-pencil-square fs-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="mb-0 fs-5 text-white">Modifier la séance</h3>
+                        <small class="text-white-50">
+                            Mettez à jour les informations de votre séance de tutorat.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- ⚠️ SECTION D'AFFICHAGE DES ERREURS GLOBALES -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Erreur :</strong>
+                        <ul class="mb-0 mt-2">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Matière + Statut -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.matiere|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.statut|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <!-- Titre + Description -->
+                    {{ form.titre|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+
+                    <!-- Date + heures -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.date|as_crispy_field }}
+                            <small class="text-muted">Sauf les dimanches</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.heure_debut|as_crispy_field }}
+                                <small class="text-muted">Entre 8h30 et 21h</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                {{ form.heure_fin|as_crispy_field }}
+                                <small class="text-muted">Jusqu'à 21h</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lieu + Places -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.lieu|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.places_max|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'liste_seances_tuteur' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Annuler
+                        </a>
+                        <button type="submit"
+                                class="btn text-white fw-semibold"
+                                style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 50%, #d35400 100%);
+                                       border: none;">
+                            <i class="bi bi-check2-circle me-1"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

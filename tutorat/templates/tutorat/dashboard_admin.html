@@ -1,0 +1,422 @@
+{% extends 'tutorat/base.html' %}
+
+{% block title %}Dashboard Admin - Tutorat{% endblock %}
+
+{% block content %}
+<style>
+    .welcome-card {
+        background: #2c3e50;
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .welcome-card h1 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    .welcome-card p {
+        opacity: 0.9;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Base icône */
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 0.75rem;
+        color: white;
+    }
+
+    /* Couleurs par carte (harmonie avec le reste du site) */
+    .stats-icon.users {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); /* bleu */
+    }
+
+    .stats-icon.sessions {
+        background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); /* vert */
+    }
+
+    .stats-icon.subjects {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); /* orange */
+    }
+
+    .stats-icon.forum {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); /* rouge */
+    }
+
+    .stats-icon.bannis {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); /* violet */
+    }
+
+    .stats-number {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .stats-label {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    .action-card h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        padding: 0.9rem 1.2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-bottom: 0.8rem;
+    }
+
+    .action-btn:hover {
+        transform: translateX(4px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .action-btn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.9rem;
+        font-size: 1.3rem;
+    }
+
+    /* Couleurs cohérentes avec le reste de la plateforme */
+    .btn-manage-users {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+
+    .btn-manage-sessions {
+        background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+    }
+
+    .btn-manage-subjects {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    }
+
+    .btn-manage-forum {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    .btn-bannis {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    }
+
+    .btn-django-admin {
+        background: linear-gradient(135deg, #2c3e50 0%, #1c2833 100%);
+    }
+
+    .quick-stats {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    .quick-stats h3 {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        font-size: 1.2rem;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #ecf0f1;
+        font-size: 0.95rem;
+    }
+
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-item-label {
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+
+    .stat-item-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="welcome-card">
+            <!-- Ligne icône + titre -->
+            <div class="d-flex align-items-center mb-2">
+                <div class="d-flex align-items-center justify-content-center me-3"
+                     style="width: 48px; height: 48px; border-radius: 12px;
+                            background: rgba(255,255,255,0.15);">
+                    <i class="bi bi-shield-lock-fill fs-3 text-white"></i>
+                </div>
+                <h1 class="h2 mb-0 fw-bold">
+                    Tableau de bord Administrateur
+                </h1>
+            </div>
+
+            <!-- Ligne texte de bienvenue -->
+            <p class="mb-0">
+                Bienvenue {{ user.get_full_name|default:user.username|upper }} !
+                Gérez la plateforme et suivez l'activité en temps réel.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Cartes de stats principales -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-icon users">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <h2 class="stats-number">{{ total_users }}</h2>
+            <p class="stats-label">
+                Utilisateurs totaux ({{ total_tuteurs }} tuteurs / {{ total_etudiants }} étudiants)
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-icon sessions">
+                <i class="bi bi-calendar-event-fill"></i>
+            </div>
+            <h2 class="stats-number">{{ total_seances }}</h2>
+            <p class="stats-label">{{ total_inscriptions }} inscriptions confirmées</p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-icon subjects">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <h2 class="stats-number">{{ total_matieres }}</h2>
+            <p class="stats-label">Matières enseignées</p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-icon forum">
+                <i class="bi bi-chat-dots-fill"></i>
+            </div>
+            <h2 class="stats-number">{{ total_sujets_forum }}</h2>
+            <p class="stats-label">Sujets sur le forum</p>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="stats-card">
+            <div class="stats-icon bannis">
+                <i class="bi bi-slash-circle-fill"></i>
+            </div>
+            <h2 class="stats-number">{{ total_bannissements }}</h2>
+            <p class="stats-label">Bannissements en cours</p>
+        </div>
+    </div>
+</div>
+
+<!-- Actions rapides + stats globales (mois en cours) -->
+<div class="row g-4 mb-4">
+    <!-- Actions rapides -->
+    <div class="col-lg-6">
+        <div class="action-card">
+            <h3><i class="bi bi-lightning-charge-fill"></i> Actions rapides</h3>
+
+            <a href="/admin/tutorat/user/" class="action-btn btn-manage-users">
+                <div class="action-btn-icon">
+                    <i class="bi bi-people-fill text-white"></i>
+                </div>
+                <span>Gérer les utilisateurs</span>
+            </a>
+
+            <a href="{% url 'liste_seances_admin' %}" class="action-btn btn-manage-sessions">
+                <div class="action-btn-icon">
+                    <i class="bi bi-calendar-check-fill text-white"></i>
+                </div>
+                <span>Voir toutes les séances</span>
+            </a>
+
+            <a href="/admin/tutorat/matiere/" class="action-btn btn-manage-subjects">
+                <div class="action-btn-icon">
+                    <i class="bi bi-book-half text-white"></i>
+                </div>
+                <span>Gérer les matières</span>
+            </a>
+
+            <a href="{% url 'moderation_forum_admin' %}" class="action-btn btn-manage-forum">
+                <div class="action-btn-icon">
+                    <i class="bi bi-chat-square-text-fill text-white"></i>
+                </div>
+                <span>Modérer le forum</span>
+            </a>
+
+            <a href="{% url 'gestion_bannissements_admin' %}" class="action-btn btn-bannis">
+                <div class="action-btn-icon">
+                    <i class="bi bi-slash-circle text-white"></i>
+                </div>
+                <span>Gérer les bannissements</span>
+            </a>
+
+            <a href="/admin/" class="action-btn btn-django-admin">
+                <div class="action-btn-icon">
+                    <i class="bi bi-gear-wide-connected text-white"></i>
+                </div>
+                <span>Interface complète Django Admin</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats globales (mois en cours) -->
+    <div class="col-lg-6">
+        <div class="quick-stats">
+            <h3><i class="bi bi-graph-up-arrow"></i> Statistiques globales (mois en cours)</h3>
+
+            <div class="stat-item">
+                <span class="stat-item-label">
+                    <i class="bi bi-person-badge-fill text-primary"></i> Tuteurs actifs
+                </span>
+                <span class="stat-item-value text-primary">{{ tuteurs_actifs }}</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="stat-item-label">
+                    <i class="bi bi-backpack-fill text-success"></i> Étudiants inscrits
+                </span>
+                <span class="stat-item-value text-success">{{ etudiants_inscrits_mois }}</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="stat-item-label">
+                    <i class="bi bi-calendar2-week-fill text-info"></i> Séances ce mois
+                </span>
+                <span class="stat-item-value text-info">{{ seances_ce_mois }}</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="stat-item-label">
+                    <i class="bi bi-check-circle-fill text-secondary"></i> Inscriptions confirmées
+                </span>
+                <span class="stat-item-value text-secondary">{{ total_inscriptions }}</span>
+            </div>
+
+            <div class="stat-item">
+                <span class="stat-item-label">
+                    <i class="bi bi-slash-circle-fill text-danger"></i> Bannissements
+                </span>
+                <span class="stat-item-value text-danger">{{ total_bannissements }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Séances récentes -->
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white d-flex align-items-center">
+                <i class="bi bi-clock-history me-2"></i>
+                <h5 class="mb-0">Séances récentes</h5>
+            </div>
+            <div class="card-body">
+                {% if seances_recentes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Tuteur</th>
+                                    <th>Matière</th>
+                                    <th>Date</th>
+                                    <th>Inscriptions</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for seance in seances_recentes %}
+                                <tr>
+                                    <td><strong>{{ seance.titre }}</strong></td>
+                                    <td>{{ seance.tuteur.get_full_name|default:seance.tuteur.username }}</td>
+                                    <td><span class="badge bg-info">{{ seance.matiere.code }}</span></td>
+                                    <td>{{ seance.date|date:"d/m/Y" }}</td>
+                                    <td>{{ seance.inscriptions.count }}/{{ seance.places_max }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if seance.statut == 'planifiee' %}primary{% elif seance.statut == 'en_cours' %}success{% elif seance.statut == 'terminee' %}secondary{% else %}danger{% endif %}">
+                                            {{ seance.get_statut_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Aucune séance créée pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
